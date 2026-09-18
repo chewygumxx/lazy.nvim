@@ -1,9 +1,13 @@
 
->[!NOTICE]
->This repository is a mere fork of the quintessentially ubiquitous lazy-loading
->package manager for Neovim: [lazy.nvim]
+> [!IMPORTANT]
+> This repository is a mere fork of **[lazy.nvim]** by **[folke]**, the
+> quintessentially ubiquitous lazy-loading package manager for **[Neovim]**
 
-[lazy,nvim] (<https://github.com/folke/lazy.nvim>)
+[folke]:     <https://github.com/folke>
+[lazy.nvim]: <https://github.com/folke/lazy.nvim>
+[Neovim]:    <https://github.con/neovim/neovim>
+
+---
 
 <h4 align="center">
   <a href="https://lazy.folke.io/installation">Install</a>
