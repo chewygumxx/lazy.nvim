@@ -1,3 +1,10 @@
+
+>[!NOTICE]
+>This repository is a mere fork of the quintessentially ubiquitous lazy-loading
+>package manager for Neovim: [lazy.nvim]
+
+[lazy,nvim] (<https://github.com/folke/lazy.nvim>)
+
 <h4 align="center">
   <a href="https://lazy.folke.io/installation">Install</a>
   ·
