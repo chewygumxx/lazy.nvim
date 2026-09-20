@@ -69,6 +69,10 @@ M.defaults = {
     -- Utilised for programmatically deactivating plugins
     ---@type nil | boolean | fun(self:LazyPlugin):boolean | nil
     cond = nil,
+
+    -- Utilised for programmatically excluding plugins from the spec entirely
+    ---@type nil | boolean | fun(self:LazyPlugin):boolean | nil
+    enabled = nil,
   },
 
   -- Locally available plugins

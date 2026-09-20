@@ -307,7 +307,11 @@ function M:fix_disabled()
   local function check(top)
     for _, plugin in pairs(self.plugins) do
       if (plugin._.top or false) == top then
-        if plugin.enabled == false or (type(plugin.enabled) == "function" and not plugin.enabled()) then
+        local enabled = plugin.enabled
+        if enabled == nil then
+          enabled = Config.options.defaults.enabled
+        end
+        if enabled == false or (type(enabled) == "function" and not enabled(plugin)) then
           changes = changes + 1
           if plugin.optional then
             self:del(plugin.name)

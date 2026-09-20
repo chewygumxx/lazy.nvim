@@ -54,7 +54,7 @@
 ---@field main? string Entry module that has setup & deactivate
 ---@field url string?
 ---@field dir string
----@field enabled? boolean|(fun():boolean)
+---@field enabled? boolean|(fun(self:LazyPlugin):boolean)
 ---@field cond? boolean|(fun():boolean)
 ---@field optional? boolean If set, then this plugin will not be added unless it is added somewhere else
 ---@field lazy? boolean
