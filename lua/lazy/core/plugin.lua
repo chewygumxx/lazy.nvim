@@ -330,7 +330,7 @@ function M.load()
     vim.deepcopy(Config.options.spec),
   }
   specs[#specs + 1] = M.find_local_spec()
-  specs[#specs + 1] = { "folke/lazy.nvim" }
+  specs[#specs + 1] = { Config.options[1] }
 
   Config.spec:parse(specs)
 
