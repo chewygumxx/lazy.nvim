@@ -191,6 +191,14 @@ M.defaults = {
     },
   },
 
+  -- Output options for headless mode
+  headless = {
+    process = true, -- Show process command output (e.g. git)
+    log = true, -- Show log messages
+    task = true, -- Show task start/end
+    colors = true, -- Use ANSI colors
+  },
+
   debug = false,
 }
 
