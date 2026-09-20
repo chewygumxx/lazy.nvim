@@ -1,7 +1,7 @@
 -- Lazy Bootstrapper
 -- Usage:
 -- ```lua
--- load(vim.fn.system("curl -s https://raw.githubusercontent.com/folke/lazy.nvim/main/bootstrap.lua"))()
+-- load(vim.fn.system("curl -s https://raw.githubusercontent.com/chewygumxx/lazy.nvim/main/bootstrap.lua"))()
 -- ```
 local M = {}
 
@@ -26,7 +26,7 @@ function M.setup()
         "DiagnosticInfo",
       },
     }, true, {})
-    local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+    local lazyrepo = "https://github.com/chewygumxx/lazy.nvim.git"
     local ok, out = pcall(vim.fn.system, {
       "git",
       "clone",
