@@ -8,28 +8,38 @@ local data_dir = vim.fn.stdpath("data")
 local state_dir = vim.fn.stdpath("state")
 
 ---@class LazyConfig
----@field name?   string Name of lazy.nvim, sets directory names
----@field data?   string Plugin data directory (Default: <nvim_data>/lazy)
----@field state?  string Plugin state directory (Default: <nvim_state>/lazy)
----@field path?   string Clone destination (Default: <data>/lazy.nvim)
----@field url?    string URL of repository (Default: derived from [1] via git.url_format)
----@field branch? string Repository branch
-
----@type LazyConfig
 M.defaults = {
-  "folke/lazy.nvim", -- Repository URL or GitHub slug
+  --- Repository URL or slug against git.url_format
+  "chewygumxx/lazy.nvim" or nil,
 
-  branch = "stable",
+  -- Resolved URL
+  url = "https://github.com/chewygumxx/lazy.nvim.git" or nil,
 
-  spec = "spec", ---@type LazySpec
-  root = joinpath(data_dir, "lazy"), -- Plugin installation directory
-  path = joinpath(data_dir, "lazy", "lazy.nvim"),
-  state = joinpath(state_dir, "lazy", "state.json"), -- State information file
-  lockfile = joinpath(state_dir, "lazy", "lock.json"), -- Post-update lockfile
-  local_spec = true, -- Load project-local `.lazy.lua` LazySpec[] file`
+  -- Repository branch
+  branch = "main" or nil,
 
-  -- Concurrent task limit
-  ---@type number?
+  -- Name of lazy.nvim, sets directory names
+  name = "lazy" or nil,
+
+  ---@LazySpec
+  spec = "spec" or nil,
+
+  -- Plugin installation directory
+  root = joinpath(data_dir, "lazy") or nil,
+
+  -- lazy.nvim installation directory
+  path = joinpath(data_dir, "lazy", "lazy.nvim") or nil,
+
+  -- State information file
+  state = joinpath(state_dir, "lazy", "state.json") or nil,
+
+  -- Post-update lockfile
+  lockfile = joinpath(state_dir, "lazy", "lock.json") or nil,
+
+  -- Load project-local `.lazy.lua` LazySpec[] file`
+  local_spec = true or nil,
+
+  --- Concurrent task limit
   concurrency = jit.os:find("Windows") and (vim.uv.available_parallelism() * 2) or nil,
 
   diff = {
