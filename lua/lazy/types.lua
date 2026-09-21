@@ -15,7 +15,7 @@
 ---@field installed? boolean
 ---@field is_local? boolean
 ---@field kind? LazyPluginKind
----@field loaded? {[string]:string}|{time:number}
+---@field loaded? table<string, string|number>
 ---@field outdated? boolean
 ---@field rtp_loaded? boolean
 ---@field tasks? LazyTask[]
@@ -66,6 +66,7 @@
 ---@class LazyPlugin: LazyPluginBase,LazyPluginHandlers,LazyPluginHooks,LazyPluginRef
 ---@field dependencies? string[]
 ---@field specs? string|string[]|LazyPluginSpec[]
+---@field module? false Set to prevent auto-loading on `require()` of a module in this plugin
 ---@field _ LazyPluginState
 
 ---@class LazyPluginSpecHandlers
