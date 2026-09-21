@@ -47,9 +47,9 @@ end
 ---@class TaggedSemver: Semver
 ---@field tag string
 
----@param spec? string
+---@param spec? string|boolean
 function M.get_versions(repo, spec)
-  local range = Semver.range(spec or "*")
+  local range = Semver.range(type(spec) == "string" and spec or "*")
   ---@type TaggedSemver[]
   local versions = {}
   for _, tag in ipairs(M.get_tags(repo)) do
