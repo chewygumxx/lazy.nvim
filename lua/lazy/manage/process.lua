@@ -1,11 +1,10 @@
 local Async = require("lazy.async")
 local Config = require("lazy.core.config")
 
----@diagnostic disable-next-line: no-unknown
 local uv = vim.uv
 
 ---@class ProcessOpts
----@field args string[]
+---@field args? string[]
 ---@field cwd? string
 ---@field on_line? fun(line:string)
 ---@field on_exit? fun(ok:boolean, output:string)
@@ -15,18 +14,18 @@ local uv = vim.uv
 
 local M = {}
 
----@type table<uv_process_t, LazyProcess>
+---@type table<uv.uv_process_t, LazyProcess>
 M.running = setmetatable({}, { __mode = "k" })
 
 ---@class LazyProcess: Async
----@field handle? uv_process_t
+---@field handle? uv.uv_process_t
 ---@field pid? number
 ---@field cmd string
 ---@field opts ProcessOpts
----@field timeout? uv_timer_t
+---@field timeout? uv.uv_timer_t
 ---@field timedout? boolean
 ---@field data string
----@field check? uv_check_t
+---@field check? uv.uv_check_t
 ---@field code? number
 ---@field signal? number
 local Process = setmetatable({}, { __index = Async.Async })
@@ -141,14 +140,14 @@ function Process:env()
   return env_flat
 end
 
----@param signals uv.aliases.signals|uv.aliases.signals[]|nil
+---@param signals string|string[]|nil
 function Process:kill(signals)
   if not self.handle or self.handle:is_closing() then
     return
   end
   signals = signals or { "sigterm", "sigkill" }
   signals = type(signals) == "table" and signals or { signals }
-  ---@cast signals uv.aliases.signals[]
+  ---@cast signals string[]
   local timer = assert(uv.new_timer())
   timer:start(0, 1000, function()
     if self.handle and not self.handle:is_closing() and #signals > 0 then

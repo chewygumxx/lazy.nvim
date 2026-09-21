@@ -116,15 +116,18 @@ local Range = {}
 
 ---@param version string|Semver
 function Range:matches(version)
+  ---@type Semver?
+  local v
   if type(version) == "string" then
-    ---@diagnostic disable-next-line: cast-local-type
-    version = M.version(version)
+    v = M.version(version)
+  else
+    v = version
   end
-  if version then
-    if version.prerelease ~= self.from.prerelease then
+  if v then
+    if v.prerelease ~= self.from.prerelease then
       return false
     end
-    return version >= self.from and (self.to == nil or version < self.to)
+    return v >= self.from and (self.to == nil or v < self.to)
   end
 end
 
@@ -158,13 +161,17 @@ function M.range(spec)
   local semver = M.version(version)
   if semver then
     local from = semver
+    ---@type Semver?
     local to = vim.deepcopy(semver)
+    ---@cast to Semver
     if mods == "" or mods == "=" then
       to.patch = to.patch + 1
     elseif mods == ">" then
       from.patch = from.patch + 1
+      ---@cast to +nil
       to = nil
     elseif mods == ">=" then
+      ---@cast to +nil
       to = nil
     elseif mods == "~" then
       if #parts >= 2 then

@@ -330,7 +330,6 @@ M.checkout = {
       -- restore to the lock if it exists
       lock = Lock.get(self.plugin)
       if lock then
-        ---@diagnostic disable-next-line: cast-local-type
         target = lock
       end
     end

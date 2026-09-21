@@ -5,10 +5,10 @@ local Util = require("lazy.util")
 
 local M = {}
 
----@type table<string, uv.aliases.fs_stat_table>
+---@type table<string, uv.fs_stat.result>
 M.files = {}
 
----@type uv_timer_t
+---@type uv.uv_timer_t?
 M.timer = nil
 
 function M.enable()
@@ -29,8 +29,8 @@ function M.disable()
   end
 end
 
----@param h1 uv.aliases.fs_stat_table
----@param h2 uv.aliases.fs_stat_table
+---@param h1 uv.fs_stat.result
+---@param h2 uv.fs_stat.result
 function M.eq(h1, h2)
   return h1 and h2 and h1.size == h2.size and h1.mtime.sec == h2.mtime.sec and h1.mtime.nsec == h2.mtime.nsec
 end
@@ -88,7 +88,7 @@ function M.check(start)
   end
 end
 
----@param {file:string, what:string}[]
+---@param changes {file:string, what:string}[]
 function M.reload(changes)
   vim.schedule(function()
     if Config.options.change_detection.notify and not Config.headless() then
