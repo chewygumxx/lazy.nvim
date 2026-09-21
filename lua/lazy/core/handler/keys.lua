@@ -8,6 +8,7 @@ local Util = require("lazy.core.util")
 ---@field expr? boolean
 ---@field nowait? boolean
 ---@field ft? string|string[]
+---@field buffer? number
 
 ---@class LazyKeysSpec: LazyKeysBase
 ---@field [1] string lhs
@@ -34,9 +35,7 @@ function M.parse(value, mode)
   local ret = vim.deepcopy(value) --[[@as LazyKeys]]
   ret.lhs = ret[1] or ""
   ret.rhs = ret[2]
-  ---@diagnostic disable-next-line: no-unknown
   ret[1] = nil
-  ---@diagnostic disable-next-line: no-unknown
   ret[2] = nil
   ret.mode = mode or "n"
   ret.id = vim.api.nvim_replace_termcodes(ret.lhs, true, true, true)
@@ -72,7 +71,6 @@ end
 function M.resolve(spec)
   ---@type LazyKeys[]
   local values = {}
-  ---@diagnostic disable-next-line: no-unknown
   for _, value in ipairs(spec or {}) do
     value = type(value) == "string" and { value } or value --[[@as LazyKeysSpec]]
     value.mode = value.mode or "n"
@@ -92,10 +90,8 @@ end
 ---@param keys LazyKeys
 function M.opts(keys)
   local opts = {} ---@type LazyKeysBase
-  ---@diagnostic disable-next-line: no-unknown
   for k, v in pairs(keys) do
     if type(k) ~= "number" and not skip[k] then
-      ---@diagnostic disable-next-line: no-unknown
       opts[k] = v
     end
   end
@@ -193,9 +189,8 @@ end
 function M:_set(keys, buf)
   if keys.rhs then
     local opts = M.opts(keys)
-    ---@diagnostic disable-next-line: inject-field
     opts.buffer = buf
-    vim.keymap.set(keys.mode, keys.lhs, keys.rhs, opts)
+    vim.keymap.set(keys.mode, keys.lhs, keys.rhs, opts --[[@as vim.keymap.set.Opts]])
   end
 end
 

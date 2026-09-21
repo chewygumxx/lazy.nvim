@@ -178,20 +178,23 @@ end
 ---@param reason {[string]:string}
 ---@param opts? {force:boolean} when force is true, we skip the cond check
 function M.load(plugins, reason, opts)
-  ---@diagnostic disable-next-line: cast-local-type
   plugins = (type(plugins) == "string" or plugins.name) and { plugins } or plugins
   ---@cast plugins (string|LazyPlugin)[]
 
-  for _, plugin in pairs(plugins) do
-    if type(plugin) == "string" then
-      if Config.plugins[plugin] then
-        plugin = Config.plugins[plugin]
-      elseif Config.spec.disabled[plugin] then
+  for _, item in pairs(plugins) do
+    ---@type LazyPlugin?
+    local plugin
+    if type(item) == "string" then
+      if Config.plugins[item] then
+        plugin = Config.plugins[item]
+      elseif Config.spec.disabled[item] then
         plugin = nil
       else
-        Util.error("Plugin " .. plugin .. " not found")
+        Util.error("Plugin " .. item .. " not found")
         plugin = nil
       end
+    else
+      plugin = item
     end
     if plugin and not plugin._.loaded then
       M._load(plugin, reason, opts)
@@ -325,7 +328,6 @@ function M._load(plugin, reason, opts)
     end, "Failed to setup handlers for " .. plugin.name)
   end
 
-  ---@diagnostic disable-next-line: assign-type-mismatch
   plugin._.loaded = {}
   for k, v in pairs(reason) do
     plugin._.loaded[k] = v

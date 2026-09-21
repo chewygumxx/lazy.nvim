@@ -128,12 +128,12 @@ function M:add(plugin)
     return self.spec:error("Invalid plugin spec " .. vim.inspect(plugin))
   end
 
-  if type(plugin.config) == "table" then
+  local config = plugin.config
+  if type(config) == "table" then
     self.spec:warn(
       "{" .. fragment.name .. "}: setting a table to `Plugin.config` is deprecated. Please use `Plugin.opts` instead"
     )
-    ---@diagnostic disable-next-line: assign-type-mismatch
-    plugin.opts = plugin.config
+    plugin.opts = config
     plugin.config = nil
   end
 

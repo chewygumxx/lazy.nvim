@@ -51,11 +51,19 @@ function M:_parse(spec)
   else
     ret = spec --[[@as LazyEvent]]
     if not ret.id then
-      ---@diagnostic disable-next-line: assign-type-mismatch, param-type-mismatch
-      ret.id = type(ret.event) == "string" and ret.event or table.concat(ret.event, "|")
-      if ret.pattern then
-        ---@diagnostic disable-next-line: assign-type-mismatch, param-type-mismatch
-        ret.id = ret.id .. " " .. (type(ret.pattern) == "string" and ret.pattern or table.concat(ret.pattern, ", "))
+      local event = ret.event
+      if type(event) == "string" then
+        ret.id = event
+      else
+        ret.id = table.concat(event, "|")
+      end
+      local pattern = ret.pattern
+      if pattern then
+        if type(pattern) == "string" then
+          ret.id = ret.id .. " " .. pattern
+        else
+          ret.id = ret.id .. " " .. table.concat(pattern, ", ")
+        end
       end
     end
   end
@@ -139,7 +147,9 @@ function M.trigger(opts)
     local skip = done[id] or (opts.exclude and vim.tbl_contains(opts.exclude, autocmd.group_name))
     done[id] = true
     if autocmd.group and not skip then
-      opts.group = autocmd.group_name
+      -- the bundled Neovim runtime types mislabel `group_name` as an
+      -- integer; `:h nvim_get_autocmds()` documents it as a string
+      opts.group = autocmd.group_name --[[@as string?]]
       M._trigger(opts)
     end
   end

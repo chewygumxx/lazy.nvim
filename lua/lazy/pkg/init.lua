@@ -57,7 +57,7 @@ function M.update()
             dir = plugin.dir,
             source = spec.source or source.name,
             file = spec.file,
-            spec = spec.spec or {},
+            spec = (spec.spec or {}) --[[@as LazyPluginSpec]],
           }
           if type(spec.code) == "string" then
             pkg.spec = { _raw = spec.code }

@@ -14,7 +14,7 @@ local M = {}
 ---@class ModuleInfo
 ---@field modpath string Path of the module
 ---@field modname string Name of the module
----@field stat? uv_fs_t File stat of the module path
+---@field stat? CacheHash File stat of the module path
 
 ---@alias LoaderStats table<string, {total:number, time:number, [string]:number?}?>
 
@@ -225,7 +225,7 @@ end
 ---    - hash: (table) the hash of the file to load if it is already known. (defaults to `vim.uv.fs_stat({modpath})`)
 ---    - mode: (string) the mode to load the module with. "b"|"t"|"bt" (defaults to `nil`)
 ---    - env: (table) the environment to load the module in. (defaults to `nil`)
----@see |luaL_loadfile()|
+---@see luaL_loadfile
 ---@return function?, string? error_message
 ---@private
 function Loader.load(modpath, opts)
@@ -425,7 +425,6 @@ function M.disable()
   M.enabled = false
   -- selene: allow(global_usage)
   _G.loadfile = Loader._loadfile
-  ---@diagnostic disable-next-line: no-unknown
   for l, loader in ipairs(package.loaders) do
     if loader == Loader.loader or loader == Loader.loader_lib then
       table.remove(package.loaders, l)

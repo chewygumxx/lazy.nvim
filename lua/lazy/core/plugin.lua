@@ -101,7 +101,6 @@ function Spec:normalize(spec)
   elseif spec[1] or spec.dir or spec.url then
     ---@cast spec LazyPluginSpec
     self.meta:add(spec)
-    ---@diagnostic disable-next-line: cast-type-mismatch
     ---@cast spec LazySpecImport
     if spec and spec.import then
       self:import(spec)
@@ -171,7 +170,12 @@ function Spec:import(spec)
       return a.modname < b.modname
     end)
   else
-    modspecs = { { modname = import_name, load = spec.import } }
+    modspecs = {
+      {
+        modname = import_name,
+        load = spec.import --[[@as fun():(LazyPluginSpec?, string?)]],
+      },
+    }
   end
 
   for _, modspec in ipairs(modspecs) do
@@ -180,7 +184,6 @@ function Spec:import(spec)
     Util.track({ import = modname })
     self.importing = modname
     -- unload the module so we get a clean slate
-    ---@diagnostic disable-next-line: no-unknown
     package.loaded[modname] = nil
     Util.try(function()
       local mod, err = modspec.load()
@@ -305,6 +308,7 @@ function M.find_local_spec()
         import = function()
           local data = vim.secure.read(file)
           if data then
+            ---@cast data string
             return loadstring(data, M.LOCAL_SPEC)()
           end
           return {}
@@ -325,9 +329,9 @@ function M.load()
   Util.track("spec")
   Config.spec = Spec.new()
 
+  ---@type LazySpec[]
   local specs = {
-    ---@diagnostic disable-next-line: param-type-mismatch
-    vim.deepcopy(Config.options.spec),
+    vim.deepcopy(Config.options.spec --[[@as table]]),
   }
   specs[#specs + 1] = M.find_local_spec()
   specs[#specs + 1] = { Config.options[1] }
@@ -466,7 +470,6 @@ function M._values(root, plugin, prop, is_list)
   else
     ---@type {path:string[], list:any[]}[]
     local lists = {}
-    ---@diagnostic disable-next-line: no-unknown
     for _, key in ipairs(plugin[prop .. "_extend"] or {}) do
       local path = vim.split(key, ".", { plain = true })
       local r = Util.key_get(ret, path)

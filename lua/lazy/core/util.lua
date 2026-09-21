@@ -73,7 +73,7 @@ end
 ---@return string
 function M.norm(path)
   if path:sub(1, 1) == "~" then
-    local home = vim.uv.os_homedir()
+    local home = assert(vim.uv.os_homedir())
     if home:sub(-1) == "\\" or home:sub(-1) == "/" then
       home = home:sub(1, -2)
     end
@@ -154,7 +154,6 @@ end
 ---@param t table
 function M.is_list(t)
   local i = 0
-  ---@diagnostic disable-next-line: no-unknown
   for _ in pairs(t) do
     i = i + 1
     if t[i] == nil then
@@ -486,7 +485,7 @@ end
 ---@param key string|string[]
 ---@return any
 function M.key_get(t, key)
-  local path = type(key) == "table" and key or vim.split(key, ".", true)
+  local path = type(key) == "table" and key or vim.split(key --[[@as string]], ".", { plain = true })
   local value = t
   for _, k in ipairs(path) do
     if type(value) ~= "table" then
@@ -501,7 +500,7 @@ end
 ---@param key string|string[]
 ---@param value any
 function M.key_set(t, key, value)
-  local path = type(key) == "table" and key or vim.split(key, ".", true)
+  local path = type(key) == "table" and key or vim.split(key --[[@as string]], ".", { plain = true })
   local last = t
   for i = 1, #path - 1 do
     local k = path[i]

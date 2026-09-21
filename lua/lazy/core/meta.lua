@@ -79,7 +79,8 @@ function M:add(plugin)
     or fragment.dir and self.str_to_meta[fragment.dir]
 
   if not meta then
-    meta = { name = fragment.name, _ = { frags = {} } }
+    -- `dir` is filled in for real later by `_rebuild`
+    meta = { name = fragment.name, dir = "", _ = { frags = {} } }
     local url, dir = fragment.url, fragment.dir
     -- add to index
     if url then
@@ -191,7 +192,6 @@ function M:_rebuild(name)
       added[fid] = true
       local fragment = self.fragments:get(fid)
       assert(fragment, "fragment " .. fid .. " not found, for plugin " .. name)
-      ---@diagnostic disable-next-line: no-unknown
       super = setmetatable(fragment.spec, super and { __index = super } or nil)
       plugin._.dep = plugin._.dep and fragment.dep
       plugin.optional = plugin.optional and (rawget(fragment.spec, "optional") == true)

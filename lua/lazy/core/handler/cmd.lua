@@ -29,9 +29,7 @@ function M.parse(value)
   local ret = vim.deepcopy(value) --[[@as LazyCmd]]
   ret.name = ret[1]
   ret.callback = ret[2]
-  ---@diagnostic disable-next-line: no-unknown
   ret[1] = nil
-  ---@diagnostic disable-next-line: no-unknown
   ret[2] = nil
   ret.id = ret.name
   return ret
@@ -55,10 +53,8 @@ end
 ---@param cmd LazyCmd
 function M.opts(cmd)
   local opts = {} ---@type LazyCmdBase
-  ---@diagnostic disable-next-line: no-unknown
   for k, v in pairs(cmd) do
     if type(k) ~= "number" and not skip[k] then
-      ---@diagnostic disable-next-line: no-unknown
       opts[k] = v
     end
   end
@@ -75,7 +71,7 @@ function M:_load(cmd)
   -- spec-defined commands install their real definition directly,
   -- instead of relying on the plugin's config() to create it
   if cmd.callback then
-    vim.api.nvim_create_user_command(cmd.name, cmd.callback, M.opts(cmd))
+    vim.api.nvim_create_user_command(cmd.name, cmd.callback, M.opts(cmd) --[[@as vim.api.keyset.user_command]])
   end
 end
 
