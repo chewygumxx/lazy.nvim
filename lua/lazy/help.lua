@@ -11,7 +11,8 @@ function M.index(plugin)
   local files = {}
 
   for _, file in ipairs(Config.options.readme.files) do
-    vim.list_extend(files, vim.fn.expand(plugin.dir .. "/" .. file, false, true))
+    local matches = vim.fn.expand(plugin.dir .. "/" .. file, false, true)
+    vim.list_extend(files, type(matches) == "table" and matches or { matches })
   end
 
   ---@type table<string,{file:string, tag:string, line:string}>

@@ -250,7 +250,6 @@ function M._dump(value, result)
       M._dump(v, result)
       table.insert(result, ",")
     end
-    ---@diagnostic disable-next-line: no-unknown
     for k, v in pairs(value) do
       if type(k) == "string" then
         if k:match("^[a-zA-Z]+$") then

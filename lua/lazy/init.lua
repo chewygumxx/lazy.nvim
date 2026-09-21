@@ -26,6 +26,8 @@ local function profile_require()
   end
 end
 
+---@param spec LazySpec|LazyConfig
+---@param opts? LazyConfig
 ---@overload fun(opts: LazyConfig)
 ---@overload fun(spec:LazySpec, opts: LazyConfig)
 function M.setup(spec, opts)
@@ -33,6 +35,7 @@ function M.setup(spec, opts)
     ---@cast spec LazyConfig
     opts = spec
   else
+    ---@cast spec LazySpec
     opts = opts or {}
     opts.spec = spec
   end
@@ -133,7 +136,7 @@ function M.bootstrap()
       lazypath,
     })
   end
-  vim.opt.rtp:prepend(lazypath)
+  (vim.opt.rtp --[[@as vim.Option]]):prepend(lazypath)
 end
 
 ---@return LazyPlugin[]

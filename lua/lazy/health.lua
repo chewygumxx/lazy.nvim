@@ -71,7 +71,7 @@ function M.check()
 
   M.have("git")
 
-  local sites = vim.opt.packpath:get()
+  local sites = vim.opt.packpath:get() --[[@as string[] ]]
   local default_site = vim.fn.stdpath("data") .. "/site"
   if not vim.tbl_contains(sites, default_site) then
     sites[#sites + 1] = default_site
@@ -79,7 +79,11 @@ function M.check()
 
   local existing = false
   for _, site in pairs(sites) do
-    for _, packs in ipairs(vim.fn.expand(site .. "/pack/*", false, true)) do
+    local matches = vim.fn.expand(site .. "/pack/*", false, true)
+    if type(matches) ~= "table" then
+      matches = { matches }
+    end
+    for _, packs in ipairs(matches) do
       if not packs:find("[/\\]dist$") and uv.fs_stat(packs) then
         existing = true
         warn("found existing packages at `" .. packs .. "`")
@@ -91,7 +95,9 @@ function M.check()
   end
 
   for _, name in ipairs({ "packer", "plugged", "paq", "pckr", "mini.deps" }) do
-    for _, path in ipairs(vim.opt.rtp:get()) do
+    for _, path in
+      ipairs(vim.opt.rtp:get() --[[@as string[] ]])
+    do
       if path:find(name, 1, true) then
         error("Found paths on the rtp from another plugin manager `" .. name .. "`")
         break

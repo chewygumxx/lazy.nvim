@@ -1,10 +1,10 @@
 local Config = require("lazy.core.config")
 local Util = require("lazy.util")
 
----@type LazyState
+---@class LazyState
+---@field checker {last_check: number}
 local M = {}
 
----@class LazyState
 local defaults = {
   checker = {
     last_check = 0,
@@ -16,7 +16,6 @@ local data = nil
 
 function M.read()
   pcall(function()
-    ---@diagnostic disable-next-line: cast-local-type
     data = vim.json.decode(Util.read_file(Config.options.state))
   end)
   data = vim.tbl_deep_extend("force", {}, defaults, data or {})
@@ -38,7 +37,6 @@ function M.__setindex(_, key, value)
   if not data then
     M.read()
   end
-  ---@diagnostic disable-next-line: no-unknown
   data[key] = value
 end
 

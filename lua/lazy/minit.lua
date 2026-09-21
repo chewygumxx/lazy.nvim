@@ -1,5 +1,3 @@
----@diagnostic disable: inject-field
-
 local islist = vim.islist or vim.tbl_islist
 
 local M = {}

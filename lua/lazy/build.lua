@@ -1,4 +1,4 @@
-vim.opt.rtp:append(".")
+(vim.opt.rtp --[[@as vim.Option]]):append(".")
 local Rocks = require("lazy.pkg.rockspec")
 local Semver = require("lazy.manage.semver")
 local Util = require("lazy.util")
@@ -54,8 +54,8 @@ function M.fetch_manifest()
   local ret = { repository = {} }
   for _, file in ipairs(M.split()) do
     local part = Rocks.parse(file)
-    print(vim.tbl_count(part.repository or {}) .. " rocks in " .. file .. "\n")
-    for k, v in pairs(part.repository or {}) do
+    print(vim.tbl_count(part and part.repository or {}) .. " rocks in " .. file .. "\n")
+    for k, v in pairs(part and part.repository or {}) do
       ret.repository[k] = v
     end
   end
