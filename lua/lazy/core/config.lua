@@ -8,6 +8,7 @@ local data_dir = vim.fn.stdpath("data")
 local state_dir = vim.fn.stdpath("state")
 
 ---@class LazyConfig
+---@field spec? LazySpec
 M.defaults = {
   --- Repository URL or slug against git.url_format
   "chewygumxx/lazy.nvim" or nil,
@@ -21,7 +22,6 @@ M.defaults = {
   -- Name of lazy.nvim, sets directory names
   name = "lazy" or nil,
 
-  ---@LazySpec
   spec = "spec" or nil,
 
   -- Plugin installation directory
@@ -259,7 +259,9 @@ function M.setup(opts)
   M.options = vim.tbl_deep_extend("force", M.defaults, opts or {})
 
   if type(M.options.spec) == "string" then
-    M.options.spec = { import = M.options.spec }
+    M.options.spec = {
+      import = M.options.spec --[[@as string]],
+    }
   end
   table.insert(M.options.install.colorscheme, "habamax")
 
