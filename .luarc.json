@@ -1,0 +1,8 @@
+{
+  "runtime.version": "LuaJIT",
+  "workspace.checkThirdParty": false,
+  "workspace.library": ["$VIMRUNTIME/lua"],
+  "workspace.maxPreload": 10000,
+  "workspace.preloadFileSize": 10000,
+  "diagnostics.globals": ["vim"]
+}
