@@ -166,11 +166,13 @@ M.defaults = {
     wrap = true, -- Line wrapping
     pills = true, -- Header icons
     backdrop = 40, -- Backdrop blend (0 opaque, 100 transparent)
-    border = "none", -- `nvim_open_win()` config.border
-    title = nil,
+    title = nil, ---@type string? When border isn't "none"
     title_pos = "center",
     browser = vim.env.BROWSER,
     throttle = 20, -- Redraw throttle (ms)
+
+    -- `nvim_open_win()` config.border
+    border = "none" or { "╔", "═", "╗", "║", "╝", "═", "╚", "║" },
 
     -- Shown in `:Lazy` help
     custom_keys = {
