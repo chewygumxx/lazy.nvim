@@ -261,7 +261,7 @@ function M:disable(plugin)
   self.spec.disabled[plugin.name] = plugin
 end
 
---- Check if a plugin should be disabled, but ignore uninstalling it.
+--- Mark plugins whose `cond` is false so they stay installed but never load.
 function M:fix_cond()
   for _, plugin in pairs(self.plugins) do
     local cond = plugin.cond
@@ -280,7 +280,6 @@ function M:fix_cond()
           self.spec.ignore_installed[p.name] = true
         end
       end
-      plugin.enabled = false
     end
   end
 end

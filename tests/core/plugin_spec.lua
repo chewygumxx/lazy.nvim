@@ -511,15 +511,18 @@ describe("plugin spec", function()
             opts = { key = true },
           },
         },
-        expected_opts = { key = true, key_active = true },
+        expected_opts = { key = true, key_active = true, key_cond = true },
       }, -- for now, one test...
     }
     for _, test in ipairs(tests) do
       local spec = Plugin.Spec.new(test.spec)
       assert(#spec.notifs == 0)
-      assert(vim.tbl_count(spec.plugins) == 2)
+      assert(vim.tbl_count(spec.plugins) == 3)
       assert(spec.plugins.active)
       assert(spec.plugins.bar)
+      -- cond == false keeps the plugin (and its deps) installable, just not loaded
+      assert(spec.plugins.conditional)
+      assert.same(false, spec.plugins.conditional._.cond)
       assert.same(test.expected_opts, Plugin.values(spec.plugins.bar, "opts"))
     end
   end)
