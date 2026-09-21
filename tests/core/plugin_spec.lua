@@ -77,32 +77,34 @@ describe("plugin spec url/name", function()
 end)
 
 describe("plugin spec dir", function()
+  -- dev-mode resolution falls back to the plugin's normal install dir when
+  -- the dev dir doesn't exist on disk (see LazyConfig.dev.fallback), so
+  -- force it off here to deterministically exercise dev-dir resolution
+  -- without depending on a real checkout existing outside this repo.
+  Config.options.dev.fallback = false
+
   local tests = {
     {
-      "~/projects/gitsigns.nvim",
       { "lewis6991/gitsigns.nvim", opts = {}, dev = true },
       { "lewis6991/gitsigns.nvim" },
     },
     {
-      "~/projects/gitsigns.nvim",
       { "lewis6991/gitsigns.nvim", opts = {}, dev = true },
       { "gitsigns.nvim" },
     },
     {
-      "~/projects/gitsigns.nvim",
       { "lewis6991/gitsigns.nvim", opts = {} },
       { "lewis6991/gitsigns.nvim", dev = true },
     },
     {
-      "~/projects/gitsigns.nvim",
       { "lewis6991/gitsigns.nvim", opts = {} },
       { "gitsigns.nvim", dev = true },
     },
   }
 
   for _, test in ipairs(tests) do
-    local dir = vim.fn.expand(test[1])
-    local input = vim.list_slice(test, 2)
+    local dir = Config.options.dev.path .. "/gitsigns.nvim"
+    local input = test
     it("parses dir " .. inspect(input), function()
       local spec = Plugin.Spec.new(input)
       local plugins = vim.tbl_values(spec.plugins)
@@ -114,6 +116,9 @@ describe("plugin spec dir", function()
 end)
 
 describe("plugin dev", function()
+  -- see the matching comment in the "plugin spec dir" describe block above
+  Config.options.dev.fallback = false
+
   local tests = {
     {
       { "lewis6991/gitsigns.nvim", opts = {}, dev = true },
@@ -134,7 +139,7 @@ describe("plugin dev", function()
   }
 
   for _, test in ipairs(tests) do
-    local dir = vim.fn.expand("~/projects/gitsigns.nvim")
+    local dir = Config.options.dev.path .. "/gitsigns.nvim"
     local input = test
     it("parses dir " .. inspect(input), function()
       local spec = Plugin.Spec.new(input)

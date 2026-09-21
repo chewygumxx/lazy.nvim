@@ -124,6 +124,7 @@ function M.minitest.run()
     same = expect.equality,
     equal = expect.equality,
     are = {
+      same = expect.equality,
       equal = expect.equality,
     },
     is_not = {
@@ -141,15 +142,25 @@ function M.minitest.run()
   }
   Assert.__index = Assert
   assert = setmetatable({}, Assert)
-  assert = require("luassert")
-  require("mini.test").run()
+  Test.run()
+
+  -- mini.test schedules case execution via vim.schedule() and returns
+  -- immediately. Under `nvim -l`, letting this function return here would
+  -- let the script's top-level chunk finish with nothing left running,
+  -- which makes Neovim start quitting and set v:exiting. Any spec that
+  -- then spawns a process through lazy.async (see lua/lazy/async.lua)
+  -- would silently hang forever, because its executor refuses to start
+  -- once Neovim considers itself exiting. Block here until mini.test is
+  -- actually done so that never happens.
+  while Test.is_executing() do
+    vim.wait(10)
+  end
 end
 
 ---@param opts LazyConfig
 function M.minitest.setup(opts)
   return M.extend({
     spec = {
-      "lunarmodules/luassert",
       {
         "echasnovski/mini.test",
         opts = {
@@ -163,7 +174,6 @@ function M.minitest.setup(opts)
       },
       { dir = vim.uv.cwd() },
     },
-    rocks = { hererocks = true },
   }, opts)
 end
 

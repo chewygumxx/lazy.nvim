@@ -1,3 +1,8 @@
 #!/usr/bin/env bash
 
+# Default to offline so routine test runs don't block on a network fetch of
+# test deps (lazy.nvim, luassert, mini.test) or luarocks manifests. Set
+# LAZY_OFFLINE=0 to force an online run and pick up dependency updates.
+export LAZY_OFFLINE="${LAZY_OFFLINE:-1}"
+
 nvim -l tests/minit.lua --minitest "$@"
