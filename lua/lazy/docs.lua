@@ -72,7 +72,6 @@ end
 function M.commands()
   local commands = require("lazy.view.commands").commands
   local modes = require("lazy.view.config").commands
-  modes.load.opts = true
   local lines = {
     { "Command", "Lua", "Description" },
     { "---", "---", "---" },
