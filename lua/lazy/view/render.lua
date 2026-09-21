@@ -9,7 +9,7 @@ local ViewConfig = require("lazy.view.config")
 
 local Text = require("lazy.view.text")
 
----@alias LazyDiagnostic {row: number, severity: number, message:string}
+---@alias LazyDiagnostic {row: number, severity: number, message:string, col?:number, lnum?:number}
 
 ---@class LazyRender:Text
 ---@field view LazyView
@@ -22,8 +22,7 @@ local M = {}
 ---@return LazyRender
 ---@param view LazyView
 function M.new(view)
-  ---@type LazyRender
-  local self = setmetatable({}, { __index = setmetatable(M, { __index = Text }) })
+  local self = setmetatable({}, { __index = setmetatable(M, { __index = Text }) }) --[[@as LazyRender]]
   self.view = view
   self.padding = 2
   self.wrap = view.win_opts.width
@@ -301,7 +300,7 @@ function M:ms(nsec, precision)
   return math.floor(nsec / 1e6 * e + 0.5) / e .. "ms"
 end
 
----@param reason? {[string]:string, time:number}
+---@param reason? table<string, string|number>
 ---@param opts? {time_right?:boolean}
 function M:reason(reason, opts)
   opts = opts or {}
@@ -309,8 +308,7 @@ function M:reason(reason, opts)
     return
   end
   reason = vim.deepcopy(reason)
-  ---@type string?
-  local source = reason.source
+  local source = reason.source --[[@as string?]]
   if source then
     source = Util.norm(source)
     local plugin = Plugin.find(source)
@@ -329,14 +327,18 @@ function M:reason(reason, opts)
       end
     end
   end
-  if reason.runtime then
-    reason.runtime = Util.norm(reason.runtime)
-    reason.runtime = reason.runtime:gsub(".*/([^/]+/plugin/.*)", "%1")
-    reason.runtime = reason.runtime:gsub(".*/([^/]+/after/.*)", "%1")
-    reason.runtime = reason.runtime:gsub(".*/([^/]+/ftdetect/.*)", "%1")
-    reason.runtime = reason.runtime:gsub(".*/(runtime/.*)", "%1")
+  local runtime = reason.runtime --[[@as string?]]
+  if runtime then
+    runtime = Util.norm(runtime)
+    runtime = runtime:gsub(".*/([^/]+/plugin/.*)", "%1")
+    runtime = runtime:gsub(".*/([^/]+/after/.*)", "%1")
+    runtime = runtime:gsub(".*/([^/]+/ftdetect/.*)", "%1")
+    runtime = runtime:gsub(".*/(runtime/.*)", "%1")
+    reason.runtime = runtime
   end
-  local time = reason.time and (" " .. self:ms(reason.time))
+  local time = reason.time and (
+      " " .. self:ms(reason.time --[[@as number]])
+    )
   if time and not opts.time_right then
     self:append(time, "Bold")
     self:append(" ")
@@ -352,7 +354,8 @@ function M:reason(reason, opts)
     table.insert(keys, "plugin")
   end
   for _, key in ipairs(keys) do
-    local value = reason[key]
+    -- `time` is the only non-string reason value, and it's skipped below
+    local value = reason[key] --[[@as string]]
     local skip = type(key) == "number" or key == "time"
     if not skip then
       if first then
@@ -361,7 +364,8 @@ function M:reason(reason, opts)
         self:append(" ")
       end
       local hl = "LazyReason" .. key:sub(1, 1):upper() .. key:sub(2)
-      local icon = Config.options.ui.icons[key]
+      -- `list` is the only non-string icon, and it's never used as a reason key
+      local icon = Config.options.ui.icons[key] --[[@as string?]]
       if icon then
         icon = icon:gsub("%s*$", "")
         self:append(icon .. " ", hl)
@@ -616,12 +620,19 @@ function M:handlers(plugin, types)
   if not plugin._.handlers then
     return
   end
-  types = type(types) == "string" and { types } or types
-  types = types and types or vim.tbl_keys(Handler.types)
-  for _, t in ipairs(types) do
+  ---@type LazyHandlerTypes[]
+  local list
+  if types == nil then
+    list = vim.tbl_keys(Handler.types)
+  elseif type(types) == "string" then
+    list = { types }
+  else
+    list = types --[[@as LazyHandlerTypes[] ]]
+  end
+  for _, t in ipairs(list) do
     for id, value in pairs(plugin._.handlers[t] or {}) do
-      value = t == "keys" and Keys.to_string(value) or id
-      self:reason({ [t] = value })
+      local v = t == "keys" and Keys.to_string(value --[[@as LazyKeys]]) or id
+      self:reason({ [t] = v })
       self:append(" ")
     end
   end
@@ -722,7 +733,14 @@ function M:profile()
     if entry.time / 1e6 < self.view.state.profile.threshold then
       return
     end
-    local data = type(entry.data) == "string" and { source = entry.data } or entry.data
+    ---@type table<string, string|number>
+    local data
+    local entry_data = entry.data
+    if type(entry_data) == "string" then
+      data = { source = entry_data }
+    else
+      data = entry_data
+    end
     data.time = entry.time
     local symbol = M.list_icon(depth)
     self:append(("  "):rep(depth)):append(symbol, "LazySpecial"):append(" ")

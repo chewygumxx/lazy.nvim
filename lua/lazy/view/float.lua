@@ -15,7 +15,7 @@ local ViewConfig = require("lazy.view.config")
 ---@field persistent? boolean
 ---@field ft? string
 ---@field noautocmd? boolean
----@field backdrop? float
+---@field backdrop? number
 
 ---@class LazyFloat
 ---@field buf number
@@ -28,7 +28,7 @@ local ViewConfig = require("lazy.view.config")
 ---@overload fun(opts?:LazyFloatOptions):LazyFloat
 local M = {}
 
-setmetatable(M, {
+setmetatable(M --[[@as table]], {
   __call = function(_, ...)
     return M.new(...)
   end,
@@ -160,7 +160,7 @@ function M:mount()
   end
 
   self:layout()
-  self.win = vim.api.nvim_open_win(self.buf, true, self.win_opts)
+  self.win = vim.api.nvim_open_win(self.buf, true, self.win_opts --[[@as vim.api.keyset.win_config]])
   self:on("WinClosed", function()
     self:close()
     self:augroup(true)
@@ -195,7 +195,6 @@ function M:mount()
       self:layout()
       local config = {}
       for _, key in ipairs({ "relative", "width", "height", "col", "row" }) do
-        ---@diagnostic disable-next-line: no-unknown
         config[key] = self.win_opts[key]
       end
       config.style = self.opts.style ~= "" and self.opts.style or nil
@@ -219,9 +218,13 @@ function M:augroup(clear)
   return vim.api.nvim_create_augroup("trouble.window." .. self.id, { clear = clear == true })
 end
 
+---@class LazyFloatOnOpts: vim.api.keyset.create_autocmd
+---@field win? boolean
+---@field buffer? integer|false
+
 ---@param events string|string[]
 ---@param fn fun(self:LazyFloat, event:{buf:number}):boolean?
----@param opts? vim.api.keyset.create_autocmd | {buffer: false, win?:boolean}
+---@param opts? LazyFloatOnOpts
 function M:on(events, fn, opts)
   opts = opts or {}
   if opts.win then
@@ -237,7 +240,7 @@ function M:on(events, fn, opts)
   end
   local _self = Util.weak(self)
   opts.callback = function(e)
-    local this = _self()
+    local this = _self() --[[@as LazyFloat?]]
     if not this then
       -- delete the autocmd
       return true

@@ -1,6 +1,7 @@
 local M = {}
 
 ---@class LazyViewCommand
+---@field name? string
 ---@field id number
 ---@field plugins? boolean
 ---@field plugins_required? boolean
@@ -12,7 +13,7 @@ local M = {}
 ---@field toggle? boolean
 
 function M.get_commands()
-  ---@type (LazyViewCommand|{name:string})[]
+  ---@type LazyViewCommand[]
   local ret = {}
   for k, v in pairs(M.commands) do
     v.name = k

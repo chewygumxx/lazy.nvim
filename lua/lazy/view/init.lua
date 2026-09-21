@@ -303,6 +303,7 @@ function M:on_pattern(key, patterns, fallback, desc)
     local col = pos[2] + 1
 
     for pattern, handler in pairs(patterns) do
+      ---@type integer?
       local from = 1
       local to, url
       while from do
