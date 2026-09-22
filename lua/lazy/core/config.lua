@@ -7,37 +7,30 @@ local joinpath = vim.fs.joinpath
 local data_dir = vim.fn.stdpath("data")
 local state_dir = vim.fn.stdpath("state")
 
----@class LazyConfig
----@field spec? LazySpec
+---@type LazyConfig
 M.defaults = {
-  --- Repository URL or slug against git.url_format
-  "chewygumxx/lazy.nvim" or nil,
+  --- Repository URL or GitHub slug
+  "chewygumxx/lazy.nvim",
 
   -- Resolved URL
-  url = "https://github.com/chewygumxx/lazy.nvim.git" or nil,
+  url = "https://github.com/chewygumxx/lazy.nvim",
 
   -- Repository branch
-  branch = "main" or nil,
+  branch = "chewygumxx",
 
-  -- Name of lazy.nvim, sets directory names
-  name = "lazy" or nil,
-
-  spec = "spec" or nil,
+  spec = "spec",
 
   -- Plugin installation directory
-  root = joinpath(data_dir, "lazy") or nil,
-
-  -- lazy.nvim installation directory
-  path = joinpath(data_dir, "lazy", "lazy.nvim") or nil,
+  root = joinpath(data_dir, "lazy"),
 
   -- State information file
-  state = joinpath(state_dir, "lazy", "state.json") or nil,
+  state = joinpath(state_dir, "lazy", "state.json"),
 
   -- Post-update lockfile
-  lockfile = joinpath(state_dir, "lazy", "lock.json") or nil,
+  lockfile = joinpath(state_dir, "lazy", "lock.json"),
 
   -- Load project-local `.lazy.lua` LazySpec[] file`
-  local_spec = true or nil,
+  local_spec = true,
 
   --- Concurrent task limit
   concurrency = jit.os:find("Windows") and (vim.uv.available_parallelism() * 2) or nil,
@@ -77,18 +70,15 @@ M.defaults = {
     version = nil,
 
     -- Utilised for programmatically deactivating plugins
-    ---@type nil | boolean | fun(self:LazyPlugin):boolean | nil
     cond = nil,
 
     -- Utilised for programmatically excluding plugins from the spec entirely
-    ---@type nil | boolean | fun(self:LazyPlugin):boolean | nil
     enabled = nil,
   },
 
   -- Locally available plugins
   dev = {
     -- (Returns) Local plugin parent directory
-    ---@type string | fun(plugin: LazyPlugin): string
     path = vim.fs.normalize("~/dev"),
 
     -- Match patterns for resolving whether to source locally
@@ -166,13 +156,13 @@ M.defaults = {
     wrap = true, -- Line wrapping
     pills = true, -- Header icons
     backdrop = 40, -- Backdrop blend (0 opaque, 100 transparent)
-    title = nil, ---@type string? When border isn't "none"
+    title = nil, -- When border isn't "none"
     title_pos = "center",
     browser = vim.env.BROWSER,
     throttle = 20, -- Redraw throttle (ms)
 
     -- `nvim_open_win()` config.border
-    border = "none" or { "╔", "═", "╗", "║", "╝", "═", "╚", "║" },
+    border = "none",
 
     -- Shown in `:Lazy` help
     custom_keys = {
