@@ -5,46 +5,48 @@
 -- ```
 local M = {}
 
-function M.setup()
-  local uv = vim.uv or vim.loop
-  if vim.env.LAZY_STDPATH then
-    local root = vim.fn.fnamemodify(vim.env.LAZY_STDPATH, ":p"):gsub("[\\/]$", "")
-    for _, name in ipairs({ "config", "data", "state", "cache" }) do
-      vim.env[("XDG_%s_HOME"):format(name:upper())] = root .. "/" .. name
-    end
-  end
-
-  if vim.env.LAZY_PATH and not uv.fs_stat(vim.env.LAZY_PATH) then
-    vim.env.LAZY_PATH = nil
-  end
-
-  local lazypath = vim.env.LAZY_PATH or vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-  if not vim.env.LAZY_PATH and not uv.fs_stat(lazypath) then
-    vim.api.nvim_echo({
-      {
-        "Cloning lazy.nvim\n\n",
-        "DiagnosticInfo",
-      },
-    }, true, {})
-    local lazyrepo = "https://github.com/chewygumxx/lazy.nvim.git"
-    local ok, out = pcall(vim.fn.system, {
+--- Clones remote repository of lazy.nvim
+---@param url    string Repository URL
+---@param path   string Clone destination
+---@param branch string Repository branch
+---@return number syscall_code Exit code of git clone
+function M.install(url, path, branch)
+  vim.notify("Installing lazy.nvim package manager", vim.log.levels.INFO)
+  local syscall = vim
+    .system({
       "git",
       "clone",
       "--filter=blob:none",
-      lazyrepo,
-      lazypath,
-    })
-    if not ok or vim.v.shell_error ~= 0 then
-      vim.api.nvim_echo({
-        { "Failed to clone lazy.nvim\n", "ErrorMsg" },
-        { vim.trim(out or ""), "WarningMsg" },
-        { "\nPress any key to exit...", "MoreMsg" },
-      }, true, {})
-      vim.fn.getchar()
-      os.exit(1)
+      type(branch) == "string" and "--branch=" .. branch or nil,
+      url,
+      path,
+    }, { text = true })
+    :wait()
+  if syscall.code ~= 0 then
+    vim.notify("Failed to clone lazy.nvim", vim.log.levels.ERROR)
+    vim.notify(
+      table.concat({
+        "Exited with code: " .. tostring(syscall.code),
+        syscall.stderr,
+      }, "\n"),
+      vim.log.levels.WARN
+    )
+  end
+  return syscall.code
+end
+
+function M.setup()
+  local path = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+  local repo = "https://github.com/chewygumxx/lazy.nvim.git"
+
+  if not (vim.uv or vim.loop).fs_stat(path) then
+    local code = M.install(repo, path, "chewygumxx")
+    if code ~= 0 then
+      return
     end
   end
-  vim.opt.rtp:prepend(lazypath)
+
+  vim.opt.rtp:prepend(path)
 end
 M.setup()
 
