@@ -3,6 +3,5 @@
   "workspace.checkThirdParty": false,
   "workspace.library": ["$VIMRUNTIME/lua", "library"],
   "workspace.maxPreload": 10000,
-  "workspace.preloadFileSize": 10000,
-  "diagnostics.globals": ["vim"]
+  "workspace.preloadFileSize": 10000
 }
