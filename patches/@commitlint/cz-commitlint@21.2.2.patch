@@ -1,0 +1,36 @@
+# vim:set expandtab shiftwidth=4 filetype=diff:
+# SPDX-License-Identifier: Apache-2.0
+
+#
+#
+# ~folke/lazy.nvim.git
+# └─> ~chewygumxx/lazy.nvim.git
+# ::: :/patches/@commitlint/cz-commitlint@21.2.2.patch
+#
+#
+
+--- a/lib/services/getRuleQuestionConfig.js
++++ b/lib/services/getRuleQuestionConfig.js
+@@ -60,9 +60,10 @@
+         const enumDescriptions = questionSettings?.["enum"];
+         const emojiInHeader = questionSettings?.emojiInHeader;
+         if (enumDescriptions) {
+             const enumNames = Object.keys(enumDescriptions);
+-            const longest = Math.max(...enumRuleList.map((enumName) => enumName.length));
++            const displayName = (enumName) => enumDescriptions[enumName]?.title || enumName;
++            const longest = Math.max(...enumRuleList.map((enumName) => displayName(enumName).length));
+             const firstHasEmoji = (enumDescriptions[enumNames[0]]?.emoji?.length ?? 0) > 0;
+             const hasConsistentEmojiUsage = !enumRuleList.some((enumName) => (enumDescriptions[enumName]?.emoji?.length ?? 0) > 0 !== firstHasEmoji);
+             enumList = enumRuleList
+                 .sort((a, b) => enumNames.indexOf(a) - enumNames.indexOf(b))
+@@ -71,9 +72,9 @@
+                 if (enumDescription) {
+                     const rawEmoji = enumDescriptions[enumName]?.emoji;
+                     const emoji = rawEmoji ? normalizeEmoji(rawEmoji) : rawEmoji;
+                     const emojiPrefix = emoji ? `${emoji}  ` : hasConsistentEmojiUsage ? "" : "    ";
+-                    const paddedName = `${enumName}:`.padEnd(longest + 4);
++                    const paddedName = displayName(enumName).padEnd(longest + 4);
+                     const name = `${emojiPrefix}${paddedName}${enumDescription}`;
+                     const value = emojiInHeader && emoji ? `${emoji.trim()} ${enumName}` : enumName;
+                     return { name, value, short: enumName };
+                 }
