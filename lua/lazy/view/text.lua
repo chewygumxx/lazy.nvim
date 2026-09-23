@@ -10,6 +10,7 @@ local Util = require("lazy.util")
 ---@field wrap number
 local Text = {}
 
+---@return Text
 function Text.new()
   local self = setmetatable({}, { __index = Text })
   self._lines = {}
@@ -55,11 +56,13 @@ function Text:append(str, hl, opts)
   return self
 end
 
+---@return Text
 function Text:nl()
   table.insert(self._lines, {})
   return self
 end
 
+---@param buf integer
 function Text:render(buf)
   local lines = {}
 
@@ -151,10 +154,12 @@ function Text:trim()
   end
 end
 
+---@return number
 function Text:row()
   return #self._lines == 0 and 1 or #self._lines
 end
 
+---@return number
 function Text:col()
   if #self._lines == 0 then
     return 0

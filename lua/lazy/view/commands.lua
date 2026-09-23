@@ -69,6 +69,7 @@ M.commands = {
     -- when a command is executed with a bang, wait will be set
     require("lazy.core.loader").load(opts.plugins, { cmd = "Lazy load" }, { force = opts.wait })
   end,
+  ---@param opts ManagerOpts
   reload = function(opts)
     for _, plugin in pairs(opts.plugins) do
       if type(plugin) == "string" then
@@ -88,6 +89,9 @@ M.commands = {
   restore = Manage.restore,
 }
 
+---@param cmd string
+---@param prefix string
+---@return string[]?
 function M.complete(cmd, prefix)
   if not (ViewConfig.commands[cmd] or {}).plugins and cmd ~= "pkg" then
     return
@@ -143,6 +147,7 @@ function M.setup()
   })
 end
 
+---@param args string
 ---@return string, string[]
 function M.parse(args)
   local parts = vim.split(vim.trim(args), "%s+")

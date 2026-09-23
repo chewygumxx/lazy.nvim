@@ -25,6 +25,7 @@ local M = {}
 ---@type LazyView
 M.view = nil
 
+---@return boolean
 function M.visible()
   return M.view and M.view.win and vim.api.nvim_win_is_valid(M.view.win)
 end
@@ -43,10 +44,12 @@ function M.show(mode)
 end
 
 ---@param plugin LazyPlugin
+---@return boolean
 function M:is_selected(plugin)
   return vim.deep_equal(self.state.plugin, { name = plugin.name, kind = plugin._.kind })
 end
 
+---@return LazyView
 function M.create()
   local self = setmetatable({}, { __index = setmetatable(M, { __index = Float }) })
   ---@cast self LazyView
@@ -186,6 +189,7 @@ function M:update()
   end
 end
 
+---@param path string
 function M:open_url(path)
   local plugin = self.render:get_plugin()
   if plugin then
@@ -255,6 +259,7 @@ function M:hover()
 end
 
 ---@param opts? {commit?:string, browser:boolean, hover:boolean}
+---@return boolean?
 function M:diff(opts)
   opts = opts or {}
   local plugin = self.render:get_plugin()

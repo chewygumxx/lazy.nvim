@@ -41,12 +41,14 @@ local function next_id()
 end
 
 ---@param opts? LazyFloatOptions
+---@return LazyFloat
 function M.new(opts)
   local self = setmetatable({}, { __index = M })
   return self:init(opts)
 end
 
 ---@param opts? LazyFloatOptions
+---@return LazyFloat
 function M:init(opts)
   require("lazy.view.colors").setup()
   self.id = next_id()
@@ -302,10 +304,12 @@ function M:close(opts)
   end)
 end
 
+---@return boolean
 function M:win_valid()
   return self.win and vim.api.nvim_win_is_valid(self.win)
 end
 
+---@return boolean
 function M:buf_valid()
   return self.buf and vim.api.nvim_buf_is_valid(self.buf)
 end
@@ -316,6 +320,7 @@ function M:hide()
   end
 end
 
+---@return boolean
 function M:toggle()
   if self:win_valid() then
     self:hide()

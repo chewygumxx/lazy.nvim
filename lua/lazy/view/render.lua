@@ -122,6 +122,7 @@ function M:get_plugin(row)
 end
 
 ---@param selected {name:string, kind?: LazyPluginKind}
+---@return number?
 function M:get_row(selected)
   for _, loc in ipairs(self.locations) do
     if loc.kind == selected.kind and loc.name == selected.name then
@@ -293,7 +294,9 @@ function M:diagnostic(diag)
   table.insert(self._diagnostics, diag)
 end
 
+---@param nsec number
 ---@param precision? number
+---@return string
 function M:ms(nsec, precision)
   precision = precision or 2
   local e = math.pow(10, precision)
@@ -714,6 +717,7 @@ function M:profile()
   end
 
   ---@param entry LazyProfile
+  ---@return LazyProfile[]
   local function get_children(entry)
     ---@type LazyProfile[]
     local children = entry
@@ -729,6 +733,7 @@ function M:profile()
   end
 
   ---@param entry LazyProfile
+  ---@param depth number
   local function _profile(entry, depth)
     if entry.time / 1e6 < self.view.state.profile.threshold then
       return
@@ -756,6 +761,8 @@ function M:profile()
   end
 end
 
+---@param depth number
+---@return string
 function M.list_icon(depth)
   local symbols = Config.options.ui.icons.list
   return symbols[(depth - 1) % #symbols + 1]

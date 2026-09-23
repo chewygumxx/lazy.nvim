@@ -12,6 +12,7 @@ local M = {}
 ---@field key_plugin? string
 ---@field toggle? boolean
 
+---@return LazyViewCommand[]
 function M.get_commands()
   ---@type LazyViewCommand[]
   local ret = {}

@@ -1,5 +1,6 @@
 local M = {}
 
+---@type table<string, string|{bold?: boolean, italic?: boolean}>
 M.colors = {
   H1 = "IncSearch", -- home button
   H2 = "Bold", -- titles
