@@ -1,6 +1,8 @@
 ---@class LazyUtil: LazyUtilCore
 local M = setmetatable({}, { __index = require("lazy.core.util") })
 
+---@param file string
+---@return boolean
 function M.file_exists(file)
   return vim.uv.fs_stat(file) ~= nil
 end
@@ -11,6 +13,9 @@ function M.float(opts)
   return require("lazy.view.float")(opts)
 end
 
+---@param win number
+---@param k string
+---@param v any
 function M.wo(win, k, v)
   if vim.api.nvim_set_option_value then
     vim.api.nvim_set_option_value(k, v, { scope = "local", win = win })
@@ -19,6 +24,7 @@ function M.wo(win, k, v)
   end
 end
 
+---@param uri string
 ---@param opts? {system?:boolean}
 function M.open(uri, opts)
   opts = opts or {}
@@ -54,6 +60,8 @@ function M.open(uri, opts)
   end
 end
 
+---@param file string
+---@return string
 function M.read_file(file)
   local fd = assert(io.open(file, "r"))
   ---@type string
@@ -62,6 +70,8 @@ function M.read_file(file)
   return data
 end
 
+---@param file string
+---@param contents string
 function M.write_file(file, contents)
   local fd = assert(io.open(file, "w+"))
   fd:write(contents)
@@ -132,6 +142,7 @@ end
 -- Opens a floating terminal (interactive by default)
 ---@param cmd? string[]|string
 ---@param opts? LazyCmdOptions|{interactive?:boolean}
+---@return LazyFloat
 function M.float_term(cmd, opts)
   cmd = cmd or {}
   if type(cmd) == "string" then
@@ -160,6 +171,7 @@ end
 --- Runs the command and shows it in a floating window
 ---@param cmd string[]
 ---@param opts? LazyCmdOptions|{filetype?:string}
+---@return LazyFloat?
 function M.float_cmd(cmd, opts)
   opts = opts or {}
   local Process = require("lazy.manage.process")
@@ -187,6 +199,7 @@ function M.open_cmd()
   M.warn([[`require("lazy.util").open_cmd()` is deprecated. Please use `float_term` instead. Check the docs]])
 end
 
+---@param file string
 ---@return string?
 function M.head(file)
   local f = io.open(file)
@@ -197,6 +210,7 @@ function M.head(file)
   end
 end
 
+---@param dir string
 ---@return {branch: string, hash:string}?
 function M.git_info(dir)
   local line = M.head(dir .. "/.git/HEAD")
@@ -236,6 +250,8 @@ function M.markdown(msg, opts)
   )
 end
 
+---@param value any
+---@param result string[]
 function M._dump(value, result)
   local t = type(value)
   if t == "number" or t == "boolean" then
@@ -267,6 +283,8 @@ function M._dump(value, result)
   end
 end
 
+---@param value any
+---@return string
 function M.dump(value)
   local result = {}
   M._dump(value, result)

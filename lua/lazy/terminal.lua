@@ -1,6 +1,7 @@
 ---@class Ansi: table<string, fun(string):string>
 local M = {}
 
+---@type table<string, string>
 M.colors = {
   reset = "\27[0m",
   black = "\27[30m",
@@ -21,26 +22,61 @@ M.colors = {
   bright_white = "\27[97m",
 }
 
+---@param text string
+---@param color string
+---@return string
 function M.color(text, color)
   return M.colors[color] .. text .. M.colors.reset
 end
 
 -- stylua: ignore start
+---@param text string
+---@return string
 function M.black(text) return M.color(text, "black") end
+---@param text string
+---@return string
 function M.red(text) return M.color(text, "red") end
+---@param text string
+---@return string
 function M.green(text) return M.color(text, "green") end
+---@param text string
+---@return string
 function M.yellow(text) return M.color(text, "yellow") end
+---@param text string
+---@return string
 function M.blue(text) return M.color(text, "blue") end
+---@param text string
+---@return string
 function M.magenta(text) return M.color(text, "magenta") end
+---@param text string
+---@return string
 function M.cyan(text) return M.color(text, "cyan") end
+---@param text string
+---@return string
 function M.white(text) return M.color(text, "white") end
+---@param text string
+---@return string
 function M.bright_black(text) return M.color(text, "bright_black") end
+---@param text string
+---@return string
 function M.bright_red(text) return M.color(text, "bright_red") end
+---@param text string
+---@return string
 function M.bright_green(text) return M.color(text, "bright_green") end
+---@param text string
+---@return string
 function M.bright_yellow(text) return M.color(text, "bright_yellow") end
+---@param text string
+---@return string
 function M.bright_blue(text) return M.color(text, "bright_blue") end
+---@param text string
+---@return string
 function M.bright_magenta(text) return M.color(text, "bright_magenta") end
+---@param text string
+---@return string
 function M.bright_cyan(text) return M.color(text, "bright_cyan") end
+---@param text string
+---@return string
 function M.bright_white(text) return M.color(text, "bright_white") end
 -- stylua: ignore end
 

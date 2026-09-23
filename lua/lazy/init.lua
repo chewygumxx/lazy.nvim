@@ -119,6 +119,7 @@ function M.setup(spec, opts)
   require("lazy.stats").track("LazyDone")
 end
 
+---@return LazyStats
 function M.stats()
   return require("lazy.stats").stats()
 end

@@ -62,11 +62,13 @@ function Async:_emit(event, res)
   end
 end
 
+---@return boolean
 function Async:running()
   return coroutine.status(self._co) ~= "dead"
 end
 
 ---@async
+---@param ms number
 function Async:sleep(ms)
   vim.defer_fn(function()
     self:resume()
@@ -116,6 +118,7 @@ function Async:wait()
   return self
 end
 
+---@return boolean
 function Async:step()
   if self._suspended then
     return true
@@ -201,6 +204,7 @@ function M._run()
   end
 end
 
+---@return Async?
 function M.running()
   local co = coroutine.running()
   if co then

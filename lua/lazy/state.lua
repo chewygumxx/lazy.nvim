@@ -26,6 +26,8 @@ function M.write()
   Util.write_file(Config.options.state, vim.json.encode(data))
 end
 
+---@param key string
+---@return any
 function M.__index(_, key)
   if not data then
     M.read()
@@ -33,6 +35,8 @@ function M.__index(_, key)
   return data[key]
 end
 
+---@param key string
+---@param value any
 function M.__setindex(_, key, value)
   if not data then
     M.read()

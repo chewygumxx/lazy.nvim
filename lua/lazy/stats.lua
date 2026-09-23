@@ -25,12 +25,15 @@ function M.on_ui_enter()
   vim.api.nvim_exec_autocmds("User", { pattern = "LazyVimStarted", modeline = false })
 end
 
+---@param event string
+---@return number
 function M.track(event)
   local time = M.cputime()
   M._stats.times[event] = time
   return time
 end
 
+---@return number
 function M.cputime()
   if M.C == nil then
     pcall(function()
@@ -69,6 +72,7 @@ function M.cputime()
   end
 end
 
+---@return LazyStats
 function M.stats()
   M._stats.count = 0
   M._stats.loaded = 0

@@ -3,6 +3,8 @@ local Util = require("lazy.util")
 
 local M = {}
 
+---@param plugin LazyPlugin
+---@return table<string,{file:string, tag:string, line:string}>
 function M.index(plugin)
   if Config.options.readme.skip_if_doc_exists and vim.uv.fs_stat(plugin.dir .. "/doc") then
     return {}

@@ -8,6 +8,9 @@ local M = {}
 M.patterns = { "nvim", "treesitter", "tree-sitter", "cmp", "neo" }
 local manifest_file = "build/manifest.lua"
 
+---@param url string
+---@param file string
+---@param prefix? string
 function M.fetch(url, file, prefix)
   if not vim.uv.fs_stat(file) then
     print((prefix or "") .. "Fetching " .. url .. " to " .. file .. "\n")
@@ -20,6 +23,7 @@ function M.fetch(url, file, prefix)
   end
 end
 
+---@return string[]
 function M.split()
   local lines = vim.fn.readfile(manifest_file)
   local id = 0
@@ -62,6 +66,9 @@ function M.fetch_manifest()
   return ret
 end
 
+---@param name string
+---@param version? string
+---@param prefix? string
 function M.fetch_rockspec(name, version, prefix)
   version = version or "scm-1"
   local url = "https://luarocks.org/" .. name .. "-" .. version .. ".rockspec"

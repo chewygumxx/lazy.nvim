@@ -1,3 +1,4 @@
+---@type LazySpec
 return {
   -- the colorscheme should be available when starting Neovim
   {

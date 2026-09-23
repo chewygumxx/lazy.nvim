@@ -23,6 +23,7 @@ local info = vim.health.info or vim.health.report_info
 
 ---@param cmd string|string[]
 ---@param opts? LazyHealthHave
+---@return boolean?
 function M.have(cmd, opts)
   opts = vim.tbl_extend("force", {
     error = error,

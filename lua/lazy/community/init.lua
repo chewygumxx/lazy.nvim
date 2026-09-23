@@ -3,6 +3,7 @@ local M = {}
 ---@type table<string, string>
 local mapping = nil
 
+---@return table<string, string>
 local function load()
   if not mapping then
     mapping = {}
@@ -21,6 +22,8 @@ function M.get_url(rock)
   return load()[rock]
 end
 
+---@param name string
+---@return LazyPluginSpec?
 function M.get_spec(name)
   return require("lazy.community.specs")[name]
 end

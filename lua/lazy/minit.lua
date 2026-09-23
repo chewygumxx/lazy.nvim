@@ -11,6 +11,7 @@ end
 
 ---@param defaults LazyConfig
 ---@param opts LazyConfig
+---@return LazyConfig
 function M.extend(defaults, opts)
   local spec = {}
   vim.list_extend(spec, get_spec(defaults))
@@ -83,6 +84,7 @@ function M.setup(opts)
   end
 end
 
+---@param opts? LazyConfig
 function M.repro(opts)
   opts = M.extend({
     spec = {
@@ -156,6 +158,7 @@ function M.minitest.run()
 end
 
 ---@param opts LazyConfig
+---@return LazyConfig
 function M.minitest.setup(opts)
   return M.extend({
     spec = {
@@ -193,6 +196,7 @@ function M.busted.run()
 end
 
 ---@param opts LazyConfig
+---@return LazyConfig
 function M.busted.setup(opts)
   local args = table.concat(_G.arg, " ")
   local json = args:find("--output[ =]json")

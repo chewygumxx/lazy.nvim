@@ -2,6 +2,9 @@ local Util = require("lazy.util")
 
 local M = {}
 
+---@param str string
+---@param indent number
+---@return string
 function M.indent(str, indent)
   local lines = vim.split(str, "\n")
   for l, line in ipairs(lines) do
@@ -11,6 +14,7 @@ function M.indent(str, indent)
 end
 
 ---@param str string
+---@return string
 function M.fix_indent(str)
   local lines = vim.split(str, "\n")
 
@@ -58,6 +62,8 @@ function M.save(contents, readme_file)
   vim.cmd.checktime()
 end
 
+---@param file string
+---@param pattern string
 ---@return string
 function M.extract(file, pattern)
   local init = Util.read_file(file)
@@ -103,6 +109,7 @@ function M.commands()
 end
 
 ---@param lines string[][]
+---@return string
 function M.table(lines)
   ---@type string[]
   local ret = {}
