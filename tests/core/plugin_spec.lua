@@ -1,5 +1,6 @@
 local Config = require("lazy.core.config")
 local Handler = require("lazy.core.handler")
+local Mocks = require("mocks")
 local Plugin = require("lazy.core.plugin")
 
 local function inspect(obj)
@@ -81,7 +82,13 @@ describe("plugin spec dir", function()
   -- the dev dir doesn't exist on disk (see LazyConfig.dev.fallback), so
   -- force it off here to deterministically exercise dev-dir resolution
   -- without depending on a real checkout existing outside this repo.
-  Config.options.dev.fallback = false
+  local restore_fallback
+  setup(function()
+    restore_fallback = Mocks.patch_config({ dev = { fallback = false } })
+  end)
+  teardown(function()
+    restore_fallback()
+  end)
 
   local tests = {
     {
@@ -117,7 +124,13 @@ end)
 
 describe("plugin dev", function()
   -- see the matching comment in the "plugin spec dir" describe block above
-  Config.options.dev.fallback = false
+  local restore_fallback
+  setup(function()
+    restore_fallback = Mocks.patch_config({ dev = { fallback = false } })
+  end)
+  teardown(function()
+    restore_fallback()
+  end)
 
   local tests = {
     {
