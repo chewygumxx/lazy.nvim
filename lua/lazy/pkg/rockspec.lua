@@ -52,6 +52,7 @@ function M.hererocks.build(task)
 end
 
 ---@param bin string
+---@return string
 function M.hererocks.bin(bin)
   local hererocks = Config.options.rocks.root .. "/hererocks/bin"
   return Util.norm(hererocks .. "/" .. bin)
@@ -64,6 +65,7 @@ function M.hererocks.building()
 end
 
 ---@param opts? LazyHealth
+---@return boolean
 function M.check(opts)
   opts = vim.tbl_extend("force", {
     error = Util.error,
@@ -215,6 +217,7 @@ function M.build(task)
 end
 
 ---@param rockspec RockSpec
+---@return boolean
 function M.is_simple_build(rockspec)
   local type = vim.tbl_get(rockspec, "build", "type")
   return type == nil or type == "none" or (type == "builtin" and not rockspec.build.modules)
@@ -231,6 +234,7 @@ function M.parse(file)
 end
 
 ---@param plugin LazyPlugin
+---@return string[]?
 function M.deps(plugin)
   local root = Config.options.rocks.root .. "/" .. plugin.name
   ---@type RockManifest?
@@ -245,6 +249,7 @@ function M.rockspec(file)
 end
 
 ---@param plugin LazyPlugin
+---@return string?
 function M.find_rockspec(plugin)
   local rockspec_file ---@type string?
   Util.ls(plugin.dir, function(path, name, t)
