@@ -39,6 +39,8 @@ local Loader = {
 }
 
 --- Tracks the time spent in a function
+---@param stat string
+---@param start number
 ---@private
 function Loader.track(stat, start)
   Loader._stats[stat] = Loader._stats[stat] or { total = 0, time = 0 }
@@ -48,6 +50,8 @@ end
 
 --- slightly faster/different version than vim.fs.normalize
 --- we also need to have it here, since the loader will load vim.fs
+---@param path string
+---@return string
 ---@private
 function Loader.normalize(path)
   if path:sub(1, 1) == "~" then

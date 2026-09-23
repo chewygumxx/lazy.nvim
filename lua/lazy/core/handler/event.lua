@@ -107,6 +107,7 @@ end
 ---@param event string
 ---@param buf number
 ---@param data any
+---@return LazyEventOpts[]
 function M.get_state(event, buf, data)
   local state = {} ---@type LazyEventOpts[]
   while event do
@@ -124,6 +125,7 @@ end
 
 -- Get all augroups for the events
 ---@param event string
+---@return string[]
 function M.get_augroups(event)
   local groups = {} ---@type string[]
   for _, autocmd in ipairs(vim.api.nvim_get_autocmds({ event = event })) do

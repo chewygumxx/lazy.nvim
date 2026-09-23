@@ -18,6 +18,7 @@ M.disabled_rtp_plugins = { packer_compiled = true }
 M.did_ftdetect = {}
 M.did_handlers = false
 
+---@param plugin string
 function M.disable_rtp_plugin(plugin)
   M.disabled_rtp_plugins[plugin] = true
 end
@@ -65,6 +66,7 @@ end
 
 -- this will incrementally install missing plugins
 -- multiple rounds can happen when importing a spec from a missing plugin
+---@return boolean? true when another round of installs may be needed
 function M.install_missing()
   for _, plugin in pairs(Config.plugins) do
     local installed = plugin._.installed
@@ -157,6 +159,7 @@ function M.startup()
   Util.track()
 end
 
+---@return LazyPlugin[]
 function M.get_start_plugins()
   ---@type LazyPlugin[]
   local start = {}
@@ -173,7 +176,6 @@ function M.get_start_plugins()
   return start
 end
 
----@class Loader
 ---@param plugins string|LazyPlugin|string[]|LazyPlugin[]
 ---@param reason {[string]:string}
 ---@param opts? {force:boolean} when force is true, we skip the cond check
@@ -398,6 +400,7 @@ function M.config(plugin)
 end
 
 ---@param plugin LazyPlugin
+---@return string?
 function M.get_main(plugin)
   if plugin.main then
     return plugin.main
@@ -506,6 +509,7 @@ function M.add_to_luapath(plugin)
   package.cpath = package.cpath .. ";" .. cpath2 .. "/?." .. (jit.os:find("Windows") and "dll" or "so") .. ";"
 end
 
+---@param path string
 function M.source(path)
   Util.track({ runtime = path })
   Util.try(function()
@@ -514,6 +518,7 @@ function M.source(path)
   Util.track()
 end
 
+---@param name string
 function M.colorscheme(name)
   if vim.tbl_contains(vim.fn.getcompletion("", "color"), name) then
     return
@@ -530,6 +535,8 @@ function M.colorscheme(name)
   end
 end
 
+---@param modname string
+---@param modpath string
 function M.auto_load(modname, modpath)
   local plugin = Plugin.find(modpath, { fast = not M.did_handlers })
   if plugin then
@@ -551,6 +558,7 @@ function M.auto_load(modname, modpath)
 end
 
 ---@param modname string
+---@return (fun(): any)?
 function M.loader(modname)
   local paths, cached = Util.get_unloaded_rtp(modname, { cache = true })
   local ret = Cache.find(modname, { rtp = false, paths = paths })[1]

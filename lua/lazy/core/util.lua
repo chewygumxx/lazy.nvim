@@ -9,6 +9,7 @@ M.is_win = jit.os:find("Windows")
 
 ---@param data (string|{[string]:string})?
 ---@param time number?
+---@return LazyProfile
 function M.track(data, time)
   if data then
     local entry = {
@@ -29,6 +30,7 @@ function M.track(data, time)
   end
 end
 
+---@return boolean
 function M.exiting()
   return vim.v.exiting ~= vim.NIL
 end
@@ -70,6 +72,7 @@ function M.normname(name)
   return ret
 end
 
+---@param path string
 ---@return string
 function M.norm(path)
   if path:sub(1, 1) == "~" then
@@ -84,6 +87,7 @@ function M.norm(path)
 end
 
 ---@param opts? {level?: number}
+---@return string
 function M.pretty_trace(opts)
   opts = opts or {}
   local Config = require("lazy.core.config")
@@ -136,6 +140,7 @@ function M.try(fn, opts)
   return ok and result or nil
 end
 
+---@return string?
 function M.get_source()
   local f = 2
   while true do
@@ -152,6 +157,7 @@ end
 
 -- Fast implementation to check if a table is a list
 ---@param t table
+---@return boolean
 function M.is_list(t)
   local i = 0
   for _ in pairs(t) do
@@ -254,6 +260,7 @@ M.unloaded_cache = {}
 
 ---@param modname string
 ---@param opts? {cache?:boolean}
+---@return string[], boolean
 function M.get_unloaded_rtp(modname, opts)
   opts = opts or {}
 
@@ -282,6 +289,9 @@ function M.get_unloaded_rtp(modname, opts)
   return rtp, false
 end
 
+---@param modname string
+---@return string? root
+---@return string? modpath
 function M.find_root(modname)
   local paths, cached = M.get_unloaded_rtp(modname, { cache = true })
 
@@ -436,6 +446,8 @@ function M.debug(msg, opts)
   end
 end
 
+---@param v any
+---@return boolean
 local function can_merge(v)
   return type(v) == "table" and (vim.tbl_isempty(v) or not M.is_list(v))
 end
@@ -468,6 +480,8 @@ function M.merge(...)
   return ret
 end
 
+---@param module string
+---@return table
 function M.lazy_require(module)
   local mod = nil
   -- if already loaded, return the module

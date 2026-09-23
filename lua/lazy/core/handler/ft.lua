@@ -13,6 +13,7 @@ function M:add(plugin)
   end
 end
 
+---@param value string
 ---@return LazyEvent
 function M:_parse(value)
   return {

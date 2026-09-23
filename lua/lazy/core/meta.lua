@@ -68,6 +68,7 @@ end
 --- This will create a new plugin if it does not exist.
 --- It also keeps track of renames.
 ---@param plugin LazyPluginSpec
+---@return LazyPlugin?, LazyFragment?
 function M:add(plugin)
   local fragment = self.fragments:add(plugin)
   if not fragment then
@@ -164,6 +165,7 @@ end
 --- This will resolve the plugin based on its fragments using metatables.
 --- This also resolves dependencies, dep, optional, dir, dev, and url.
 ---@param name string
+---@return LazyPlugin?
 function M:_rebuild(name)
   if not self.dirty[name] then
     return
@@ -285,6 +287,7 @@ function M:fix_cond()
 end
 
 --- Removes plugins for which all its fragments are optional.
+---@return number changes
 function M:fix_optional()
   if self.spec.optional then
     return 0
@@ -301,8 +304,10 @@ function M:fix_optional()
 end
 
 --- Removes plugins that are disabled.
+---@return number changes
 function M:fix_disabled()
   local changes = 0
+  ---@param top boolean
   local function check(top)
     for _, plugin in pairs(self.plugins) do
       if (plugin._.top or false) == top then

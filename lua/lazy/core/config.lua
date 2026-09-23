@@ -208,6 +208,7 @@ M.defaults = {
   debug = false,
 }
 
+---@return boolean
 function M.hererocks()
   if M.options.rocks.hererocks == nil then
     M.options.rocks.hererocks = vim.fn.executable("luarocks") == 0
@@ -242,6 +243,7 @@ M.maplocalleader = nil
 
 M.suspended = false
 
+---@return boolean
 function M.headless()
   return not M.suspended and #vim.api.nvim_list_uis() == 0
 end

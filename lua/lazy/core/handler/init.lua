@@ -57,6 +57,7 @@ function M.enable(plugin)
 end
 
 ---@param type LazyHandlerTypes
+---@return LazyHandler
 function M.new(type)
   ---@type LazyHandler
   local handler = require("lazy.core.handler." .. type)
@@ -87,6 +88,7 @@ end
 
 ---@param values any[]
 ---@param plugin LazyPlugin
+---@return table<string,any>
 function M:_values(values, plugin)
   ---@type table<string,any>
   local ret = {}

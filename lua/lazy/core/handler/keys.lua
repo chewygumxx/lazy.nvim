@@ -58,16 +58,20 @@ end
 
 ---@param lhs string
 ---@param mode? string
+---@return boolean
 function M:have(lhs, mode)
   local keys = M.parse(lhs, mode)
   return self.managed[keys.id] ~= nil
 end
 
+---@param values (string|LazyKeysSpec)[]
+---@return table<string,LazyKeys>
 function M:_values(values)
   return M.resolve(values)
 end
 
 ---@param spec? (string|LazyKeysSpec)[]
+---@return table<string,LazyKeys>
 function M.resolve(spec)
   ---@type LazyKeys[]
   local values = {}
@@ -88,6 +92,7 @@ function M.resolve(spec)
 end
 
 ---@param keys LazyKeys
+---@return LazyKeysBase
 function M.opts(keys)
   local opts = {} ---@type LazyKeysBase
   for k, v in pairs(keys) do
@@ -99,6 +104,7 @@ function M.opts(keys)
 end
 
 ---@param keys LazyKeys
+---@return boolean
 function M.is_nop(keys)
   return type(keys.rhs) == "string" and (keys.rhs == "" or keys.rhs:lower() == "<nop>")
 end

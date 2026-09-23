@@ -22,6 +22,7 @@ M.LOCAL_SPEC = ".lazy.lua"
 
 ---@param spec? LazySpec
 ---@param opts? {optional?:boolean, pkg?:boolean}
+---@return LazySpecLoader
 function Spec.new(spec, opts)
   local self = setmetatable({}, Spec)
   self.meta = Meta.new(self)
@@ -39,6 +40,8 @@ function Spec.new(spec, opts)
   return self
 end
 
+---@param key string
+---@return any
 function Spec:__index(key)
   if Spec[key] then
     return Spec[key]
@@ -49,12 +52,14 @@ function Spec:__index(key)
   end
 end
 
+---@param spec LazySpec
 function Spec:parse(spec)
   self:normalize(spec)
   self.meta:resolve()
 end
 
 -- PERF: optimized code to get package name without using lua patterns
+---@param pkg string
 ---@return string
 function Spec.get_name(pkg)
   local name = pkg:sub(-4) == ".git" and pkg:sub(1, -5) or pkg
@@ -63,10 +68,12 @@ function Spec.get_name(pkg)
   return slash and name:sub(#name - slash + 2) or pkg:gsub("%W+", "_")
 end
 
+---@param msg string
 function Spec:error(msg)
   self:log(msg, vim.log.levels.ERROR)
 end
 
+---@param msg string
 function Spec:warn(msg)
   self:log(msg, vim.log.levels.WARN)
 end
@@ -77,6 +84,8 @@ function Spec:log(msg, level)
   self.notifs[#self.notifs + 1] = { msg = msg, level = level, file = self.importing }
 end
 
+---@param level? number
+---@return number count of notifications at or above `level`
 function Spec:report(level)
   level = level or vim.log.levels.ERROR
   local count = 0
@@ -393,6 +402,7 @@ end
 -- Finds the plugin that has this path
 ---@param path string
 ---@param opts? {fast?:boolean}
+---@return LazyPlugin?
 function M.find(path, opts)
   if not Config.spec then
     return
@@ -415,6 +425,7 @@ function M.find(path, opts)
 end
 
 ---@param plugin LazyPlugin
+---@return boolean
 function M.has_errors(plugin)
   for _, task in ipairs(plugin._.tasks or {}) do
     if task:has_errors() then
@@ -430,6 +441,7 @@ end
 ---@param plugin LazyPlugin
 ---@param prop string
 ---@param is_list? boolean
+---@return table
 function M.values(plugin, prop, is_list)
   if not plugin[prop] then
     return {}
@@ -448,6 +460,7 @@ end
 ---@param plugin LazyPlugin
 ---@param prop string
 ---@param is_list? boolean
+---@return table
 function M._values(root, plugin, prop, is_list)
   if not plugin[prop] then
     return {}

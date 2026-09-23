@@ -34,6 +34,7 @@ function M.new(spec)
 end
 
 ---@param id number
+---@return LazyFragment?
 function M:get(id)
   return self.fragments[id]
 end
@@ -82,6 +83,7 @@ end
 --- Add a fragment to the fragments list.
 --- This also resolves its name, url, dir, dependencies and child specs.
 ---@param plugin LazyPluginSpec
+---@return LazyFragment?
 function M:add(plugin)
   if self.plugins[plugin] then
     return self.fragments[self.plugins[plugin]]

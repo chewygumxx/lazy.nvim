@@ -36,6 +36,7 @@ function M.parse(value)
 end
 
 ---@param spec? (string|LazyCmdSpec)[]
+---@return table<string,LazyCmd>
 function M.resolve(spec)
   ---@type table<string,LazyCmd>
   local values = {}
@@ -46,11 +47,14 @@ function M.resolve(spec)
   return values
 end
 
+---@param values (string|LazyCmdSpec)[]
+---@return table<string,LazyCmd>
 function M:_values(values)
   return M.resolve(values)
 end
 
 ---@param cmd LazyCmd
+---@return LazyCmdBase
 function M.opts(cmd)
   local opts = {} ---@type LazyCmdBase
   for k, v in pairs(cmd) do
