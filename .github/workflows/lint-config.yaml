@@ -1,0 +1,194 @@
+# vim:set expandtab shiftwidth=4 filetype=yaml:
+# SPDX-License-Identifier: Apache-2.0
+
+#
+#
+# ~chewygumxx/lazy.nvim.git
+# ::: :/.github/workflows/lint-config.yaml
+#
+#
+
+name: Lint Config
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+    workflow_dispatch: {}
+
+permissions:
+    contents: read
+
+jobs:
+    lua:
+        name: Lua
+        runs-on: ubuntu-latest
+
+        # Pinned manually to avoid an unauthenticated releases-API lookup on
+        # every run; bump by hand when a newer release is needed.
+        env:
+            LUAFMT_VERSION: "0.25.1" # https://github.com/EmmyLuaLs/emmylua-analyzer-rust/releases
+            SELENE_VERSION: "0.31.0" # https://github.com/Kampfkarren/selene/releases
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+
+            - name: Cache luafmt
+              id: cache-luafmt
+              uses: actions/cache@v6
+              with:
+                  path: ${{ runner.temp }}/luafmt
+                  key: luafmt-${{ env.LUAFMT_VERSION }}
+
+            - name: Install luafmt
+              if: steps.cache-luafmt.outputs.cache-hit != 'true'
+              run: |
+                  mkdir -p "$RUNNER_TEMP/luafmt"
+                  curl -sL "https://github.com/EmmyLuaLs/emmylua-analyzer-rust/releases/download/${LUAFMT_VERSION}/luafmt-linux-x64.tar.gz" | tar xzf - -C "$RUNNER_TEMP/luafmt"
+                  chmod +x "$RUNNER_TEMP/luafmt/luafmt"
+
+            - name: Add luafmt to PATH
+              run: echo "$RUNNER_TEMP/luafmt" >> "$GITHUB_PATH"
+
+            - name: Cache selene
+              id: cache-selene
+              uses: actions/cache@v6
+              with:
+                  path: ${{ runner.temp }}/selene
+                  key: selene-${{ env.SELENE_VERSION }}
+
+            # "light" build: no Roblox standard library, unneeded here.
+            - name: Install selene
+              if: steps.cache-selene.outputs.cache-hit != 'true'
+              run: |
+                  mkdir -p "$RUNNER_TEMP/selene"
+                  curl -sL "https://github.com/Kampfkarren/selene/releases/download/${SELENE_VERSION}/selene-light-${SELENE_VERSION}-linux.zip" -o "$RUNNER_TEMP/selene/selene.zip"
+                  unzip -oq "$RUNNER_TEMP/selene/selene.zip" -d "$RUNNER_TEMP/selene"
+                  chmod +x "$RUNNER_TEMP/selene/selene"
+
+            - name: Add selene to PATH
+              run: echo "$RUNNER_TEMP/selene" >> "$GITHUB_PATH"
+
+            - name: Check formatting
+              run: git ls-files -- '*.lua' ':!**/symlink_*' | xargs -d '\n' luafmt --check --verify
+
+            # selene resolves selene.toml (and the std files it references)
+            # from the invocation cwd (repo root) on its own; this assumes a
+            # single repo-root selene.toml. If a nested one is ever added,
+            # this needs --config again.
+            - name: Lint
+              run: git ls-files -- '*.lua' ':!**/symlink_*' | xargs -d '\n' selene
+
+    luacats:
+        name: LuaCATS
+        runs-on: ubuntu-latest
+
+        # Pinned manually to avoid an unauthenticated releases-API lookup on
+        # every run; bump by hand when a newer release is needed.
+        env:
+            NVIM_VERSION: "0.12.5" # https://github.com/neovim/neovim/releases
+            LUA_LS_VERSION: "3.19.1" # https://github.com/LuaLS/lua-language-server/releases
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+
+            - name: Cache Neovim
+              id: cache-nvim
+              uses: actions/cache@v6
+              with:
+                  path: ${{ runner.temp }}/nvim
+                  key: nvim-${{ env.NVIM_VERSION }}
+
+            - name: Install Neovim
+              if: steps.cache-nvim.outputs.cache-hit != 'true'
+              run: |
+                  mkdir -p "$RUNNER_TEMP/nvim"
+                  curl -sL "https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-x86_64.tar.gz" | tar xzf - -C "$RUNNER_TEMP/nvim" --strip-components=1
+
+            - name: Add Neovim to PATH
+              run: echo "$RUNNER_TEMP/nvim/bin" >> "$GITHUB_PATH"
+
+            - name: Cache lua-language-server
+              id: cache-lua-ls
+              uses: actions/cache@v6
+              with:
+                  path: ${{ runner.temp }}/lua-language-server
+                  key: lua-language-server-${{ env.LUA_LS_VERSION }}
+
+            - name: Install lua-language-server
+              if: steps.cache-lua-ls.outputs.cache-hit != 'true'
+              run: |
+                  mkdir -p "$RUNNER_TEMP/lua-language-server"
+                  curl -sL "https://github.com/LuaLS/lua-language-server/releases/download/${LUA_LS_VERSION}/lua-language-server-${LUA_LS_VERSION}-linux-x64.tar.gz" | tar xzf - -C "$RUNNER_TEMP/lua-language-server"
+                  chmod +x "$RUNNER_TEMP/lua-language-server/bin/lua-language-server"
+
+            - name: Add lua-language-server to PATH
+              run: echo "$RUNNER_TEMP/lua-language-server/bin" >> "$GITHUB_PATH"
+
+            # Fails if lua-language-server can't infer anything more
+            # specific than any/unknown anywhere under lua/, lsp/, or
+            # init.lua. See scripts/luals_untyped.lua for how.
+            - name: Check annotation coverage
+              run: nvim --headless -u scripts/minimal_init.lua -l scripts/luals_untyped.lua
+
+    toml:
+        name: TOML
+        runs-on: ubuntu-latest
+
+        # Pinned manually to avoid an unauthenticated releases-API lookup on
+        # every run; bump by hand when a newer tombi release is needed.
+        # https://github.com/tombi-toml/tombi/releases
+        env:
+            TOMBI_VERSION: "v1.5.5"
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+
+            - name: Cache tombi
+              id: cache-tombi
+              uses: actions/cache@v6
+              with:
+                  path: ${{ runner.temp }}/tombi
+                  key: tombi-${{ env.TOMBI_VERSION }}
+
+            - name: Install tombi
+              if: steps.cache-tombi.outputs.cache-hit != 'true'
+              run: |
+                  mkdir -p "$RUNNER_TEMP/tombi"
+                  curl -sL "https://github.com/tombi-toml/tombi/releases/download/${TOMBI_VERSION}/tombi-cli-${TOMBI_VERSION#v}-x86_64-unknown-linux-musl.tar.gz" | tar xzf - -C "$RUNNER_TEMP/tombi" --strip-components=1
+                  chmod +x "$RUNNER_TEMP/tombi/tombi"
+
+            - name: Add tombi to PATH
+              run: echo "$RUNNER_TEMP/tombi" >> "$GITHUB_PATH"
+
+            - name: Check Formatting
+              run: git ls-files -- '*.toml' ':!**/symlink_*' | xargs -d '\n' tombi format --check --offline
+
+            - name: Lint
+              run: git ls-files -- '*.toml' ':!**/symlink_*' | xargs -d '\n' tombi lint --error-on-warnings --offline
+
+    json-yaml:
+        name: JSON & YAML
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+
+            - name: Setup Node
+              uses: actions/setup-node@v5
+              with:
+                  node-version: 22
+
+            - name: NPM Clean Install
+              run: npm ci
+
+            - name: Check Formatting
+              run: |
+                  git ls-files -- '*.json' '*.jsonc' '*.yaml' '*.yml' ':!**/symlink_*' |
+                      while IFS= read -r f; do [ -L "$f" ] || printf '%s\n' "$f"; done |
+                      xargs -d '\n' npx --no -- prettier --check

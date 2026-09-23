@@ -1,0 +1,62 @@
+# vim:set expandtab shiftwidth=4 filetype=yaml:
+# SPDX-License-Identifier: Apache-2.0
+
+#
+#
+# ~chewygumxx/lazy.nvim.git
+# ::: :/.github/workflows/test.yaml
+#
+#
+
+name: Test
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+    workflow_dispatch: {}
+
+permissions:
+    contents: read
+
+jobs:
+    mini-test:
+        name: mini.test
+        runs-on: ubuntu-latest
+
+        # Pinned manually to avoid an unauthenticated releases-API lookup on
+        # every run; bump by hand when a newer Neovim release is needed.
+        # https://github.com/neovim/neovim/releases
+        env:
+            NVIM_VERSION: "0.12.5"
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+
+            - name: Cache Neovim
+              id: cache-nvim
+              uses: actions/cache@v6
+              with:
+                  path: ${{ runner.temp }}/nvim
+                  key: nvim-${{ env.NVIM_VERSION }}
+
+            - name: Install Neovim
+              if: steps.cache-nvim.outputs.cache-hit != 'true'
+              run: |
+                  mkdir -p "$RUNNER_TEMP/nvim"
+                  curl -sL "https://github.com/neovim/neovim/releases/download/v${NVIM_VERSION}/nvim-linux-x86_64.tar.gz" | tar xzf - -C "$RUNNER_TEMP/nvim" --strip-components=1
+
+            - name: Add Neovim to PATH
+              run: echo "$RUNNER_TEMP/nvim/bin" >> "$GITHUB_PATH"
+
+            # `main` branch, unpinned: matches the lack of a `version` pin
+            # for `nvim-mini/mini.test` in `lua/spec/mini.test.lua`.
+            - name: Install mini.test
+              run: |
+                  git clone --depth 1 https://github.com/nvim-mini/mini.test \
+                      "$HOME/.local/share/nvim/lazy/mini.test"
+
+            - name: Run tests
+              run: nvim --headless -u scripts/minimal_init.lua -l scripts/minitest.lua
