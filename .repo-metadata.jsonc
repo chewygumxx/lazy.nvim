@@ -1,0 +1,26 @@
+// vim:set expandtab shiftwidth=4 filetype=jsonc:
+// SPDX-License-Identifier: Apache-2.0
+
+//
+//
+// ~chewygumxx/lazy.nvim.git
+// ::: :/.repo-metadata.jsonc
+//
+//
+
+{
+    "$schema": "https://raw.githubusercontent.com/chewygumxx/sync-repo-metadata/refs/tags/v2/schema.json",
+    "name": "lazy.nvim",
+    "owner": "chewygumxx",
+    "slug": "chewygumxx/lazy.nvim",
+    "default_branch": "main",
+    "description": "This repository is a mere fork of lazy.nvim by folke, the quintessentially ubiquitous lazy-loading package manager for Neovim",
+    "category": "neovim",
+    "topics": ["neovim", "neovim-config", "neovim-plugin"],
+    "license": {
+        "filepath": "./LICENSE",
+        "spdx_id": "Apache-2.0",
+        "full_name": "Apache License 2.0",
+        "url": "https://spdx.org/licenses/Apache-2.0"
+    }
+}
