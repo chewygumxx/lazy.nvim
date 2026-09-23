@@ -1,0 +1,23 @@
+# vim:set expandtab shiftwidth=4 filetype=toml:
+# SPDX-License-Identifier: Apache-2.0
+
+#
+#
+# ~chewygumxx/lazy.nvim.git
+# ::: :/.tombi.toml
+#
+#
+
+# https://tombi-toml.github.io/tombi/docs/configuration
+
+toml-version = "v1.1.0"
+
+[format]
+[format.rules]
+array-bracket-space-width       = 1
+date-time-delimiter             = "space"
+group-blank-lines-limit         = 2
+indent-width                    = 4
+key-value-equals-sign-alignment = true
+trailing-comment-alignment      = true
+trailing-comment-space-width    = 2

@@ -1,0 +1,32 @@
+# vim:set expandtab shiftwidth=4 filetype=yaml:
+# SPDX-License-Identifier: GPL-3.0-only
+
+#
+#
+# ~chewygumxx/nvim-config.git
+# ::: :/busted.yml
+#
+#
+
+# selene standard library for the 'busted' globals `mini.test`'s
+# `emulate_busted` temporarily injects while collecting `tests/test_*.lua`
+# (see `lua/spec/mini.nvim.lua`). Referenced from `selene.toml`'s `std`.
+# Scoped repo-wide rather than to `tests/` only, since selene has no
+# directory-scoped config; these names are distinctive enough not to
+# collide with anything outside `tests/`.
+---
+globals:
+    MiniTest:
+        any: true
+    describe:
+        any: true
+    it:
+        any: true
+    setup:
+        any: true
+    before_each:
+        any: true
+    after_each:
+        any: true
+    teardown:
+        any: true
