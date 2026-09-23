@@ -63,4 +63,28 @@ function M.stub_process(responses)
     })
 end
 
+--- Stubs lazy.manage.process's `spawn` (used by LazyTask:spawn) so no real
+--- process is spawned. Keyed the same way as stub_process: `cmd` joined with
+--- `opts.args` by spaces.
+---@param responses table<string, { code?: number, signal?: number, data?: string }>
+---@return fun() restore
+function M.stub_spawn(responses)
+    return M.patch("lazy.manage.process", {
+        spawn = function(cmd, opts)
+            local key = cmd
+            if opts and opts.args and #opts.args > 0 then
+                key = key .. " " .. table.concat(opts.args, " ")
+            end
+            local resp = responses[key]
+            assert(resp, "no stubbed spawn response for: " .. key)
+            return {
+                code = resp.code or 0,
+                signal = resp.signal or 0,
+                data = resp.data or "",
+                wait = function() end,
+            }
+        end,
+    })
+end
+
 return M
