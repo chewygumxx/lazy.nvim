@@ -13,10 +13,14 @@ local M = {}
 local Semver = {}
 Semver.__index = Semver
 
+---@param key any
+---@return any
 function Semver:__index(key)
   return type(key) == "number" and ({ self.major, self.minor, self.patch })[key] or Semver[key]
 end
 
+---@param key any
+---@param value any
 function Semver:__newindex(key, value)
   if key == 1 then
     self.major = value
@@ -30,6 +34,7 @@ function Semver:__newindex(key, value)
 end
 
 ---@param other Semver
+---@return boolean
 function Semver:__eq(other)
   for i = 1, 3 do
     if self[i] ~= other[i] then
@@ -39,6 +44,7 @@ function Semver:__eq(other)
   return self.prerelease == other.prerelease
 end
 
+---@return string
 function Semver:__tostring()
   local ret = table.concat({ self.major, self.minor, self.patch }, ".")
   if self.prerelease then
@@ -51,6 +57,7 @@ function Semver:__tostring()
 end
 
 ---@param other Semver
+---@return boolean
 function Semver:__lt(other)
   for i = 1, 3 do
     if self[i] > other[i] then
@@ -69,6 +76,7 @@ function Semver:__lt(other)
 end
 
 ---@param other Semver
+---@return boolean
 function Semver:__le(other)
   return self < other or self == other
 end
@@ -115,6 +123,7 @@ end
 local Range = {}
 
 ---@param version string|Semver
+---@return boolean?
 function Range:matches(version)
   ---@type Semver?
   local v
@@ -132,6 +141,7 @@ function Range:matches(version)
 end
 
 ---@param spec string
+---@return SemverRange?
 function M.range(spec)
   if spec == "*" or spec == "" then
     return setmetatable({ from = M.version("0.0.0") }, { __index = Range })

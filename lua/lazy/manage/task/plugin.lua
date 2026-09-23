@@ -40,6 +40,7 @@ function B.shell(task, build)
 end
 
 M.build = {
+  ---@param plugin LazyPlugin
   ---@param opts? {force:boolean}
   skip = function(plugin, opts)
     if opts and opts.force then
@@ -86,6 +87,7 @@ M.build = {
 }
 
 M.docs = {
+  ---@param plugin LazyPlugin
   skip = function(plugin)
     return not plugin._.is_local and not plugin._.dirty
   end,
@@ -98,6 +100,7 @@ M.docs = {
 }
 
 M.exists = {
+  ---@param plugin LazyPlugin
   skip = function(plugin)
     return not plugin._.is_local or plugin.virtual
   end,

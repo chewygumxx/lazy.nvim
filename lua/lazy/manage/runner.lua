@@ -21,6 +21,7 @@ local Task = require("lazy.manage.task")
 local Runner = {}
 
 ---@param opts RunnerOpts
+---@return Runner
 function Runner.new(opts)
   local self = setmetatable({}, { __index = Runner })
   self._opts = opts or {}
@@ -46,6 +47,8 @@ function Runner.new(opts)
   return self
 end
 
+---@param name string
+---@return LazyPlugin?
 function Runner:plugin(name)
   return self._plugins[name]
 end
@@ -174,6 +177,7 @@ function Runner:queue(plugin, step)
   end
 end
 
+---@return boolean
 function Runner:is_running()
   return self._running and self._running:running()
 end
@@ -181,6 +185,7 @@ end
 -- Execute the callback async when done.
 -- When no callback is specified, this will wait sync
 ---@param cb? fun()
+---@return Runner
 function Runner:wait(cb)
   if not self:is_running() then
     if cb then

@@ -4,6 +4,7 @@ local Util = require("lazy.util")
 ---@type table<string, LazyTaskDef>
 local M = {}
 
+---@param dir string
 local function rm(dir)
   local stat = vim.uv.fs_lstat(dir)
   assert(stat and stat.type == "directory", dir .. " should be a directory!")
@@ -18,6 +19,7 @@ local function rm(dir)
 end
 
 M.clean = {
+  ---@param plugin LazyPlugin
   skip = function(plugin)
     return plugin._.is_local
   end,

@@ -15,6 +15,7 @@ local M = {}
 
 ---@param ropts RunnerOpts
 ---@param opts? ManagerOpts
+---@return Runner
 function M.run(ropts, opts)
   opts = opts or {}
 
@@ -76,6 +77,7 @@ function M.opts(opts, defaults)
 end
 
 ---@param opts? ManagerOpts
+---@return Runner
 function M.install(opts)
   opts = M.opts(opts, { mode = "install" })
   return M.run({
@@ -105,6 +107,7 @@ function M.install(opts)
 end
 
 ---@param opts? ManagerOpts
+---@return Runner
 function M.update(opts)
   opts = M.opts(opts, { mode = "update" })
   return M.run({
@@ -138,12 +141,14 @@ function M.update(opts)
 end
 --
 ---@param opts? ManagerOpts
+---@return Runner
 function M.restore(opts)
   opts = M.opts(opts, { mode = "restore", lockfile = true })
   return M.update(opts)
 end
 
 ---@param opts? ManagerOpts
+---@return Runner
 function M.check(opts)
   opts = M.opts(opts, { mode = "check" })
   opts = opts or {}
@@ -163,6 +168,7 @@ function M.check(opts)
 end
 
 ---@param opts? ManagerOpts | {check?:boolean}
+---@return Runner
 function M.log(opts)
   opts = M.opts(opts, { mode = "log" })
   return M.run({
@@ -177,6 +183,7 @@ function M.log(opts)
 end
 
 ---@param opts? ManagerOpts
+---@return Runner
 function M.build(opts)
   opts = M.opts(opts, { mode = "build" })
   return M.run({
@@ -218,6 +225,7 @@ function M.sync(opts)
 end
 
 ---@param opts? ManagerOpts
+---@return Runner
 function M.clean(opts)
   opts = M.opts(opts, { mode = "clean" })
   return M.run({

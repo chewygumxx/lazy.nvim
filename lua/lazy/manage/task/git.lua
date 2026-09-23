@@ -53,6 +53,7 @@ end
 local M = {}
 
 M.log = {
+  ---@param plugin LazyPlugin
   ---@param opts {updated?:boolean, check?: boolean}
   skip = function(plugin, opts)
     if opts.check and plugin.pin then
@@ -125,6 +126,7 @@ M.log = {
 }
 
 M.clone = {
+  ---@param plugin LazyPlugin
   skip = function(plugin)
     return plugin._.installed or plugin._.is_local
   end,
@@ -184,6 +186,7 @@ M.clone = {
 -- setup origin branches if needed
 -- fetch will retrieve the data
 M.branch = {
+  ---@param plugin LazyPlugin
   skip = function(plugin)
     if not plugin._.installed or plugin._.is_local then
       return true
@@ -210,6 +213,7 @@ M.branch = {
 
 -- check and switch origin
 M.origin = {
+  ---@param plugin LazyPlugin
   skip = function(plugin)
     if not plugin._.installed or plugin._.is_local then
       return true
@@ -236,6 +240,7 @@ M.origin = {
 }
 
 M.status = {
+  ---@param plugin LazyPlugin
   skip = function(plugin)
     return not plugin._.installed or plugin._.is_local
   end,
@@ -274,6 +279,7 @@ M.status = {
 
 -- fetches all needed origin branches
 M.fetch = {
+  ---@param plugin LazyPlugin
   skip = function(plugin)
     return not plugin._.installed or plugin._.is_local or cooldown(plugin)
   end,
@@ -308,6 +314,7 @@ M.fetch = {
 -- checkout to the target commit
 -- branches will exists at this point, so so will the commit
 M.checkout = {
+  ---@param plugin LazyPlugin
   skip = function(plugin)
     return not plugin._.installed or plugin._.is_local
   end,

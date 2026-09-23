@@ -31,10 +31,12 @@ end
 
 ---@param h1 uv.fs_stat.result
 ---@param h2 uv.fs_stat.result
+---@return boolean
 function M.eq(h1, h2)
   return h1 and h2 and h1.size == h2.size and h1.mtime.sec == h2.mtime.sec and h1.mtime.nsec == h2.mtime.nsec
 end
 
+---@param start? boolean
 function M.check(start)
   ---@type table<string,true>
   local checked = {}
@@ -42,6 +44,7 @@ function M.check(start)
   local changes = {}
 
   -- spec is a module
+  ---@param modpath string
   local function check(_, modpath)
     checked[modpath] = true
     local hash = vim.uv.fs_stat(modpath)

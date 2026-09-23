@@ -32,6 +32,7 @@ local Task = setmetatable({}, { __index = Async.Async })
 ---@param name string
 ---@param opts? TaskOptions
 ---@param task LazyTaskFn
+---@return LazyTask
 function Task.new(plugin, name, task, opts)
   local self = setmetatable({}, { __index = Task })
   ---@async
@@ -63,6 +64,7 @@ function Task:get_log(level)
 end
 
 ---@param level? number
+---@return string
 function Task:output(level)
   return table.concat(
     ---@param m LazyMsg
@@ -73,16 +75,19 @@ function Task:output(level)
   )
 end
 
+---@return string?
 function Task:status()
   local ret = self._log[#self._log]
   local msg = ret and vim.trim(ret.msg) or ""
   return msg ~= "" and msg or nil
 end
 
+---@return boolean
 function Task:has_errors()
   return self._level >= vim.log.levels.ERROR
 end
 
+---@return boolean
 function Task:has_warnings()
   return self._level >= vim.log.levels.WARN
 end
@@ -183,6 +188,7 @@ function Task:_done()
   end)
 end
 
+---@return number
 function Task:time()
   return ((self._ended or vim.uv.hrtime()) - self._started) / 1e6
 end
@@ -190,6 +196,7 @@ end
 ---@async
 ---@param cmd string
 ---@param opts? ProcessOpts
+---@return boolean
 function Task:spawn(cmd, opts)
   opts = opts or {}
   local on_line = opts.on_line
@@ -229,6 +236,7 @@ function Task:spawn(cmd, opts)
   return ok
 end
 
+---@return string
 function Task:prefix()
   local plugin = "[" .. self.plugin.name .. "] "
   local task = string.rep(" ", 20 - #(self.name .. self.plugin.name)) .. self.name

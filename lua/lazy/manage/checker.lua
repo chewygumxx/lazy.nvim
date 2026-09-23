@@ -23,6 +23,7 @@ function M.start()
   end
 end
 
+---@return number seconds until the next scheduled check
 function M.schedule()
   State.read() -- update state
   local next_check = State.checker.last_check + Config.options.checker.frequency - os.time()
@@ -49,6 +50,7 @@ function M.fast_check(opts)
   M.report(opts.report ~= false)
 end
 
+---@return boolean
 function M.has_errors()
   for _, plugin in pairs(Config.plugins) do
     if Plugin.has_errors(plugin) then

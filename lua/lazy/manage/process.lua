@@ -32,6 +32,7 @@ local Process = setmetatable({}, { __index = Async.Async })
 
 ---@param cmd string|string[]
 ---@param opts? ProcessOpts
+---@return LazyProcess
 function Process.new(cmd, opts)
   local self = setmetatable({}, { __index = Process })
   ---@async
@@ -122,6 +123,7 @@ function Process:guard()
   end
 end
 
+---@return string[]
 function Process:env()
   ---@type table<string, string>
   local env = vim.tbl_extend("force", {
@@ -215,6 +217,7 @@ M.signals = {
 
 ---@param cmd string|string[]
 ---@param opts? ProcessOpts
+---@return LazyProcess
 function M.spawn(cmd, opts)
   return Process.new(cmd, opts)
 end
@@ -228,6 +231,7 @@ end
 ---@async
 ---@param cmd string|string[]
 ---@param opts? ProcessOpts
+---@return string[], number
 function M.exec(cmd, opts)
   opts = opts or {}
   local proc = M.spawn(cmd, opts)

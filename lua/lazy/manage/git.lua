@@ -34,12 +34,15 @@ end
 
 ---@param a GitInfo
 ---@param b GitInfo
+---@return boolean
 function M.eq(a, b)
   local ra = a.commit and a.commit:sub(1, 7)
   local rb = b.commit and b.commit:sub(1, 7)
   return ra == rb
 end
 
+---@param repo string
+---@return string?
 function M.head(repo)
   return Util.head(repo .. "/.git/HEAD")
 end
@@ -47,7 +50,9 @@ end
 ---@class TaggedSemver: Semver
 ---@field tag string
 
+---@param repo string
 ---@param spec? string|boolean
+---@return TaggedSemver[]
 function M.get_versions(repo, spec)
   local range = Semver.range(type(spec) == "string" and spec or "*")
   ---@type TaggedSemver[]
@@ -63,6 +68,8 @@ function M.get_versions(repo, spec)
   return versions
 end
 
+---@param repo string
+---@return string[]
 function M.get_tags(repo)
   ---@type string[]
   local ret = {}
@@ -104,6 +111,7 @@ end
 ---@param repo string
 ---@param branch string
 ---@param origin? boolean
+---@return string?
 function M.get_commit(repo, branch, origin)
   if origin then
     -- origin ref might not exist if it is the same as local
@@ -153,6 +161,9 @@ function M.get_target(plugin)
   return { branch = branch, commit = M.get_commit(plugin.dir, branch, true) }
 end
 
+---@param repo string
+---@param ... string
+---@return string?
 function M.ref(repo, ...)
   local ref = table.concat({ ... }, "/")
 
@@ -168,6 +179,8 @@ function M.ref(repo, ...)
   return Util.head(repo .. "/.git/refs/" .. ref) or M.packed_refs(repo)[ref]
 end
 
+---@param repo string
+---@return table<string,string>
 function M.packed_refs(repo)
   local ok, refs = pcall(Util.read_file, repo .. "/.git/packed-refs")
   ---@type table<string,string>
@@ -184,7 +197,9 @@ function M.packed_refs(repo)
 end
 
 -- this is slow, so don't use on a loop over all plugins!
+---@param repo string
 ---@param tagref string?
+---@return table<string,string>
 function M.get_tag_refs(repo, tagref)
   tagref = tagref or "--tags"
   ---@type table<string,string>
@@ -205,11 +220,13 @@ function M.get_tag_refs(repo, tagref)
 end
 
 ---@param repo string
+---@return string?
 function M.get_origin(repo)
   return M.get_config(repo)["remote.origin.url"]
 end
 
 ---@param repo string
+---@return table<string,string>
 function M.get_config(repo)
   local ok, config = pcall(Util.read_file, repo .. "/.git/config")
   if not ok then
@@ -236,11 +253,18 @@ function M.get_config(repo)
   return ret
 end
 
+---@param repo string
+---@param commit1 string
+---@param commit2 string
+---@return number
 function M.count(repo, commit1, commit2)
   local lines = Process.exec({ "git", "rev-list", "--count", commit1 .. ".." .. commit2 }, { cwd = repo })
   return tonumber(lines[1] or "0") or 0
 end
 
+---@param repo string
+---@param commit string
+---@return string
 function M.age(repo, commit)
   local lines = Process.exec({ "git", "show", "-s", "--format=%cr", "--date=short", commit }, { cwd = repo })
   return lines[1] or ""
