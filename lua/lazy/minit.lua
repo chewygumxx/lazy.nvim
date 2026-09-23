@@ -33,6 +33,7 @@ function M.setup(opts)
   local is_busted = false
   local is_minitest = false
   local offline = vim.env.LAZY_OFFLINE == "1" or vim.env.LAZY_OFFLINE == "true"
+  -- selene: allow(global_usage)
   for _, a in ipairs(_G.arg) do
     if a == "--busted" then
       is_busted = true
@@ -44,6 +45,7 @@ function M.setup(opts)
       table.insert(args, a)
     end
   end
+  -- selene: allow(global_usage)
   _G.arg = args
 
   if is_busted then
@@ -167,6 +169,7 @@ function M.minitest.setup(opts)
         opts = {
           collect = {
             find_files = function()
+              -- selene: allow(global_usage)
               return #_G.arg > 0 and _G.arg or vim.fn.globpath("tests", "**/*_spec.lua", true, true)
             end,
           },
@@ -198,6 +201,7 @@ end
 ---@param opts LazyConfig
 ---@return LazyConfig
 function M.busted.setup(opts)
+  -- selene: allow(global_usage)
   local args = table.concat(_G.arg, " ")
   local json = args:find("--output[ =]json")
 

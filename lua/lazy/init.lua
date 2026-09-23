@@ -7,6 +7,7 @@ vim.uv = vim.uv or vim.loop
 local function profile_require()
   local done = {} ---@type table<string, true>
   local r = require
+  -- selene: allow(global_usage)
   _G.require = function(modname)
     local Util = package.loaded["lazy.core.util"]
     if Util and not done[modname] then
