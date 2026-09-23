@@ -1,19 +1,30 @@
+# vim:set expandtab shiftwidth=4 filetype=yaml:
+# SPDX-License-Identifier: Apache-2.0
+
+#
+#
+# ~folke/lazy.nvim.git
+# └─> ~chewygumxx/lazy.nvim.git
+# ::: :/vim.yml
+#
+#
+
 base: lua51
 lua_versions:
-  - luajit
+    - luajit
 
 globals:
-  Snacks:
-    any: true
-  vim:
-    any: true
-  jit:
-    any: true
-  assert:
-    any: true
-  describe:
-    any: true
-  it:
-    any: true
-  before_each:
-    any: true
+    Snacks:
+        any: true
+    vim:
+        any: true
+    jit:
+        any: true
+    assert:
+        any: true
+    describe:
+        any: true
+    it:
+        any: true
+    before_each:
+        any: true

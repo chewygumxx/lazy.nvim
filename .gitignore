@@ -1,3 +1,14 @@
+# vim:set expandtab shiftwidth=4 filetype=gitignore:
+# SPDX-License-Identifier: Apache-2.0
+
+#
+#
+# ~folke/lazy.nvim.git
+# └─> ~chewygumxx/lazy.nvim.git
+# ::: :/.gitignore
+#
+#
+
 *.log
 /.repro
 /.tests
