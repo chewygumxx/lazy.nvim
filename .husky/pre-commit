@@ -1,0 +1,143 @@
+#!/usr/bin/env sh
+# vim:set expandtab shiftwidth=4 filetype=sh:
+# SPDX-License-Identifier: Apache-2.0
+
+#
+#
+# ~chewygumxx/lazy.nvim.git
+# ::: :/.husky/pre-commit
+#
+#
+
+# Husky executes with `sh -e`
+# Unset to ensure each validation operation is attempted.
+set +e
+status=0
+__this_file="$0"
+
+
+# --------
+# General
+# --------
+
+log() {
+    printf '%s: %s \n' "$__this_file" "$*"
+}
+
+cmd_exist () {
+    not_found=0
+    for cmd in "$@"; do
+        if ! command -v "$cmd" >/dev/null 2>&1; then
+            log "Command not found: $cmd"
+            not_found=1
+        fi
+    done
+    return "$not_found"
+}
+
+get_files() {
+    git diff --cached --name-only --diff-filter=ACMR -- "$@" | while IFS= read -r f; do
+        [ -f "$f" ] && [ ! -L "$f" ] && printf '%s\n' "$f"
+    done
+}
+
+
+# ----------------
+# Lint and Format
+# ----------------
+
+lintfmt_lua() {
+    lua_files=$(get_files '*.lua')
+    [ -z "$lua_files" ] && return
+
+    cmd_exist selene luafmt || return 0
+
+    echo "$lua_files" | xargs -d '\n' selene || return 1
+    echo "$lua_files" | xargs -d '\n' luafmt --verify --write || return 1
+    echo "$lua_files" | xargs -d '\n' git add --
+}
+
+lintfmt_toml() {
+    toml_files=$(get_files '*.toml')
+    [ -z "$toml_files" ] && return
+
+    cmd_exist tombi || return 0
+
+    echo "$toml_files" | xargs -d '\n' tombi lint --error-on-warnings --offline || return 1
+    echo "$toml_files" | xargs -d '\n' tombi format --offline || return 1
+    echo "$toml_files" | xargs -d '\n' git add --
+}
+
+lintfmt_json_yaml() {
+    json_yaml_files=$(get_files '*.json' '*.jsonc' '*.yaml' '*.yml')
+    [ -z "$json_yaml_files" ] && return
+
+    cmd_exist npx || return 0
+
+    echo "$json_yaml_files" | xargs -d '\n' npx --no -- prettier --write || return 1
+    echo "$json_yaml_files" | xargs -d '\n' git add --
+}
+
+
+# -----
+# Test
+# -----
+
+test_luals() {
+    [ -z "$lua_files" ] && return
+
+    cmd_exist nvim lua-language-server || return 0
+
+    VIMRUNTIME=$(nvim --headless --clean \
+        -c 'lua io.stdout:write(vim.env.VIMRUNTIME or "")' \
+        -c 'qa!' \
+        2>/dev/null)
+    export VIMRUNTIME
+    luals_out=$(lua-language-server --check=. --checklevel=Warning 2>&1)
+    case "$luals_out" in
+        *"no problems found"*) ;;
+        *)
+            echo "$luals_out" | tail -n 40 >&2
+            log "LuaLS found Warnings"
+            return 1
+            ;;
+    esac
+}
+
+test_minitest() {
+    [ -z "$(get_files 'lua/' 'tests/')" ] && return
+
+    cmd_exist nvim || return 0
+
+    if [ ! -f scripts/minimal_init.lua ] || [ ! -f scripts/minitest.lua ]; then
+        log "scripts/minimal_init.lua or scripts/minitest.lua not found yet, skipping"
+        return 0
+    fi
+
+    data_dir=$(nvim --headless --clean \
+        -c 'lua io.stdout:write(vim.fn.stdpath("data"))' \
+        -c 'qa!' \
+        2>/dev/null)
+    if [ ! -d "$data_dir/lazy/mini.test" ]; then
+        log "mini.test not found at: $data_dir/lazy/mini.test"
+        return 1
+    fi
+
+    nvim --headless -u scripts/minimal_init.lua -l scripts/minitest.lua || return 1
+}
+
+
+# --------
+# Execute
+# --------
+
+cmd_exist git xargs || exit 127
+
+lintfmt_lua || status=1
+lintfmt_toml || status=1
+lintfmt_json_yaml || status=1
+
+test_luals || status=1
+test_minitest || status=1
+
+exit $status
