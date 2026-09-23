@@ -22,6 +22,26 @@ function M.fs_create(files)
     return ret
 end
 
+---@param path    string
+---@param content string
+---@return string
+function M.fs_write(path, content)
+    local full = M.path(path)
+    vim.fn.mkdir(vim.fn.fnamemodify(full, ":h"), "p")
+    Util.write_file(full, content)
+    return full
+end
+
+---@param overrides? table
+---@return LazyPlugin
+function M.plugin(overrides)
+    return vim.tbl_deep_extend(
+        "force",
+        { name = "test-plugin", dir = "/test-plugin", _ = {} },
+        overrides or {}
+    )
+end
+
 function M.fs_rm(dir)
     dir = Util.norm(M.fs_root .. "/" .. dir)
     Util.walk(dir, function(path, _, type)
