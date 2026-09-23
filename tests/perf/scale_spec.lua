@@ -61,4 +61,36 @@ describe("perf", function()
         assert.is_true(elapsed < 3000)
         assert.equal(n + 1, text:row())
     end)
+
+    it(
+        "full spec resolution stays fast for a long dependency chain",
+        function()
+            -- This mirrors the real startup hot path: Spec.new() parses
+            -- every declared plugin into fragments, then meta:resolve()
+            -- rebuilds each plugin and loops fix_disabled()+fix_optional()
+            -- until no more plugins are dropped. A chain (rather than
+            -- independent plugins) also exercises the dependency walk in
+            -- fix_cond()/_rebuild(), which is where an accidental O(n^2)
+            -- during refactor is most likely to hide.
+            local n     = 1000
+            local specs = {}
+            for i = 1, n do
+                specs[i] = {
+                    ("owner/plugin-%d"):format(i),
+                    dependencies = i > 1
+                        and { ("owner/plugin-%d"):format(i - 1) }
+                        or nil,
+                }
+            end
+
+            local spec
+            local elapsed = time_ms(function()
+                spec = Plugin.Spec.new(specs, { pkg = false })
+                spec.meta:resolve()
+            end)
+
+            assert.is_true(elapsed < 5000)
+            assert.equal(n, vim.tbl_count(spec.plugins))
+        end
+    )
 end)
