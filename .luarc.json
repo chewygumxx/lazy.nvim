@@ -1,7 +1,15 @@
 {
-  "runtime.version": "LuaJIT",
-  "workspace.checkThirdParty": false,
-  "workspace.library": ["$VIMRUNTIME/lua", "library"],
-  "workspace.maxPreload": 10000,
-  "workspace.preloadFileSize": 10000
+    "runtime.version": "LuaJIT",
+    "workspace.checkThirdParty": false,
+    "workspace.library": ["$VIMRUNTIME/lua", "library"],
+    "workspace.maxPreload": 10000,
+    "workspace.preloadFileSize": 10000,
+    "diagnostics.globals": [
+        "describe",
+        "it",
+        "before_each",
+        "after_each",
+        "setup",
+        "teardown"
+    ]
 }
