@@ -93,4 +93,36 @@ describe("perf", function()
             assert.equal(n, vim.tbl_count(spec.plugins))
         end
     )
+
+    it(
+        "opts merging stays fast across a deep super-chain of " .. "redeclarations",
+        function()
+            -- Every fragment that redeclares the same plugin adds another
+            -- __index link in its metatable chain (Meta:_rebuild). Reading
+            -- `opts` walks that whole chain recursively in M._values() and
+            -- deep-merges each level via Util.merge(). n is capped at 90,
+            -- comfortably below 99: LuaJIT hard-errors with "loop in
+            -- gettable" once an __index chain reaches 100 links, a real
+            -- constraint on this fragment model worth knowing about before
+            -- refactoring it, not something this test should trip over.
+            local n     = 90
+            local specs = {}
+            for i = 1, n do
+                specs[i] = {
+                    "foo/foo",
+                    opts = { [("key%d"):format(i)] = i },
+                }
+            end
+
+            local spec = Plugin.Spec.new(specs, { pkg = false })
+
+            local opts
+            local elapsed = time_ms(function()
+                opts = Plugin.values(spec.plugins.foo, "opts")
+            end)
+
+            assert.is_true(elapsed < 500)
+            assert.equal(n, vim.tbl_count(opts))
+        end
+    )
 end)
